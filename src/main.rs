@@ -1,0 +1,3 @@
+mod version;
+
+fn main() {}
