@@ -1,4 +1,5 @@
 mod catalog;
+mod detect;
 mod manifest;
 mod select;
 mod system;
