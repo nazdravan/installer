@@ -8,12 +8,17 @@ mod exec;
 mod journal;
 mod manifest;
 mod select;
+#[cfg(windows)]
+mod software_gl;
 mod system;
 mod version;
 
 use std::path::PathBuf;
 
 fn main() -> eframe::Result {
+    #[cfg(windows)]
+    let software = software_gl::enable_if_requested();
+
     // Totul se caută lângă Instalator.exe, oricare ar fi litera stick-ului.
     let exe_dir = std::env::current_exe()
         .ok()
@@ -48,12 +53,17 @@ fn main() -> eframe::Result {
     );
 
     if let Err(e) = &result {
+        // Fără placă video compatibilă: încearcă din nou cu OpenGL software (Mesa).
+        #[cfg(windows)]
+        if !software && software_gl::relaunch() {
+            return Ok(());
+        }
         rfd::MessageDialog::new()
             .set_level(rfd::MessageLevel::Error)
             .set_title("Instalator școală")
             .set_description(format!(
                 "Instalatorul nu poate porni: placa video nu suportă OpenGL 2.0.\n\
-                 Instalați driverul plăcii video.\n\n{e}"
+                 Puneți dosarul „soft-gl” lângă program.\n\n{e}"
             ))
             .show();
     }
