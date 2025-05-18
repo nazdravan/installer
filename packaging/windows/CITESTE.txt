@@ -1,0 +1,14 @@
+INSTALATOR ȘCOALĂ — pentru Windows 8 / 8.1 / 10 / 11 (32 și 64 de biți)
+
+Pornire: dublu-click pe Instalator.exe. Windows cere drepturi de administrator.
+Bifați programele dorite și apăsați „Instalează”. Programele se instalează pe
+rând, fără alte ferestre; la sfârșit apare un rezumat.
+
+  Instalator.exe   programul
+  Windows\         câte o mapă pentru fiecare program, cu program.toml
+  soft-gl\         OpenGL software, folosit automat dacă placa video nu are driver
+  jurnal\          creat la prima instalare: ce s-a întâmplat pe fiecare calculator
+
+Pentru a adăuga un program: creați o mapă nouă în Windows\, puneți acolo
+installer-ul și un program.toml (vezi README.md din proiect sau exemplele
+din mapele Furnica și Cangurul).
