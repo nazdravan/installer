@@ -62,6 +62,21 @@ mod tests {
         assert_eq!(entries[2].program.as_ref().unwrap_err(), "lipsește program.toml");
     }
 
+    /// Descrierile din `stick/Windows` trebuie să fie valide (arhivele nu sunt în repo).
+    #[test]
+    fn bundled_manifests_parse() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("stick/Windows");
+        let mut count = 0;
+        for dir in std::fs::read_dir(root).unwrap().flatten().filter(|d| d.path().is_dir()) {
+            let text = std::fs::read_to_string(dir.path().join("program.toml")).unwrap();
+            if let Err(e) = toml::from_str::<Program>(&text) {
+                panic!("{}: {e}", dir.path().display());
+            }
+            count += 1;
+        }
+        assert_eq!(count, 2);
+    }
+
     #[test]
     fn scan_missing_root_is_empty() {
         assert!(scan(Path::new("/nu/exista/deloc")).is_empty());

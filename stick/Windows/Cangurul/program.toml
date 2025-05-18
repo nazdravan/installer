@@ -1,0 +1,15 @@
+# Descrierea programului pentru Instalator. Câmpurile sunt explicate în README.md.
+# packaging/windows/package.sh actualizează singur „version” și „file” după arhiva găsită.
+name = "Cangurul"
+version = "3.0.6"
+category = "Educațional"
+description = "Executantul Cangurul: cangurul desenează linii după un program cu comenzi simple"
+
+# Varianta portabilă merge pe Windows 8 și 10, pe 32 și 64 de biți.
+[[variant]]
+windows = ["8", "10"]
+arch = "x86"
+kind = "zip"
+file = "cangurul-3.0.6-windows7-x86-portable.zip"
+target = 'C:\Program Files\Cangurul'
+shortcut = "Cangurul.exe"

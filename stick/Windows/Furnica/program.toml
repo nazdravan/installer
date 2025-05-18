@@ -1,0 +1,15 @@
+# Descrierea programului pentru Instalator. Câmpurile sunt explicate în README.md.
+# packaging/windows/package.sh actualizează singur „version” și „file” după arhiva găsită.
+name = "Furnica"
+version = "3.0.5"
+category = "Educațional"
+description = "Executantul Furnica pentru învățarea algoritmilor"
+
+# Varianta portabilă merge pe Windows 8 și 10, pe 32 și 64 de biți.
+[[variant]]
+windows = ["8", "10"]
+arch = "x86"
+kind = "zip"
+file = "furnica-3.0.5-windows7-x86-portable.zip"
+target = 'C:\Program Files\Furnica'
+shortcut = "Furnica.exe"
