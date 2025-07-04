@@ -259,7 +259,7 @@ mod tests {
     }
 
     fn sys() -> SystemInfo {
-        SystemInfo { win: Some(WinVer::Win10), arch: Arch::X64, admin: true, computer: "PC".into() }
+        SystemInfo { win: Some(WinVer::Win10), arch: Arch::X64, admin: true, computer: "PC".into(), linux: None }
     }
 
     fn entry(default: bool) -> Entry {

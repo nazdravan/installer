@@ -18,7 +18,7 @@ pub fn installed_version(p: &Program, v: &Variant, reg: &dyn Registry) -> Option
         let marker = Path::new(v.target.as_deref()?).join(MARKER);
         return std::fs::read_to_string(marker).ok().map(|s| s.trim().to_string());
     }
-    let prefix = p.detect.as_ref()?.registry_name.to_lowercase();
+    let prefix = p.detect.as_ref()?.registry_name.as_ref()?.to_lowercase();
     reg.uninstall_entries()
         .into_iter()
         .filter(|(name, _)| name.to_lowercase().starts_with(&prefix))

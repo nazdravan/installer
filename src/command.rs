@@ -29,6 +29,7 @@ pub fn action_for(p: &Program, v: &Variant, folder: &Path) -> Action {
             desktop: v.desktop,
             version: p.version.clone(),
         },
+        Kind::Deb | Kind::Rpm | Kind::AppImage => todo!("instalarea pe Linux"),
     }
 }
 

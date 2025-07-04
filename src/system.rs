@@ -44,10 +44,16 @@ pub struct SystemInfo {
     pub arch: Arch,
     pub admin: bool,
     pub computer: String,
+    /// Numele distribuției (`PRETTY_NAME`) când instalatorul rulează pe Linux.
+    pub linux: Option<String>,
 }
 
 impl SystemInfo {
     pub fn label(&self) -> String {
+        if let Some(distro) = &self.linux {
+            let root = if self.admin { "root ✔" } else { "fără root ❌" };
+            return format!("{distro} · {} · {root}", self.arch.bits());
+        }
         let win = self.win.map_or("Windows nesuportat", WinVer::name);
         let admin = if self.admin { "Administrator ✔" } else { "fără drepturi de administrator ❌" };
         format!("{win} · {} · {admin}", self.arch.bits())
@@ -86,13 +92,20 @@ pub fn detect() -> SystemInfo {
         arch,
         admin: unsafe { IsUserAnAdmin() } != 0,
         computer: std::env::var("COMPUTERNAME").unwrap_or_else(|_| "calculator".into()),
+        linux: None,
     }
 }
 
 /// Pe alte sisteme (dezvoltare pe macOS/Linux) se pretinde un Windows 10 obișnuit.
 #[cfg(not(windows))]
 pub fn detect() -> SystemInfo {
-    SystemInfo { win: Some(WinVer::Win10), arch: Arch::X64, admin: false, computer: "test".into() }
+    SystemInfo { win: Some(WinVer::Win10), arch: Arch::X64, admin: false, computer: "test".into(), linux: None }
+}
+
+/// Valoarea lui `PRETTY_NAME` din `/etc/os-release`.
+pub fn pretty_name(os_release: &str) -> Option<String> {
+    let value = os_release.lines().find_map(|l| l.strip_prefix("PRETTY_NAME="))?;
+    Some(value.trim().trim_matches('"').to_string())
 }
 
 #[cfg(test)]
@@ -100,10 +113,26 @@ mod tests {
     use super::*;
 
     #[test]
+    fn pretty_name_parses() {
+        let text = "NAME=\"Linux Mint\"\nPRETTY_NAME=\"Linux Mint 21.3\"\nID=linuxmint\n";
+        assert_eq!(pretty_name(text).as_deref(), Some("Linux Mint 21.3"));
+        assert_eq!(pretty_name("PRETTY_NAME=antiX-23\n").as_deref(), Some("antiX-23"));
+        assert_eq!(pretty_name("ID=x\n"), None);
+    }
+
+    #[test]
+    fn label_linux() {
+        let sys = SystemInfo { win: None, arch: Arch::X64, admin: true, computer: "PC".into(), linux: Some("Ubuntu 22.04".into()) };
+        assert_eq!(sys.label(), "Ubuntu 22.04 · 64 biți · root ✔");
+        let sys = SystemInfo { admin: false, ..sys };
+        assert_eq!(sys.label(), "Ubuntu 22.04 · 64 biți · fără root ❌");
+    }
+
+    #[test]
     fn label_formats() {
-        let sys = SystemInfo { win: Some(WinVer::Win8), arch: Arch::X86, admin: true, computer: "PC1".into() };
+        let sys = SystemInfo { win: Some(WinVer::Win8), arch: Arch::X86, admin: true, computer: "PC1".into(), linux: None };
         assert_eq!(sys.label(), "Windows 8 · 32 biți · Administrator ✔");
-        let sys = SystemInfo { win: None, arch: Arch::X64, admin: false, computer: "PC1".into() };
+        let sys = SystemInfo { win: None, arch: Arch::X64, admin: false, computer: "PC1".into(), linux: None };
         assert_eq!(sys.label(), "Windows nesuportat · 64 biți · fără drepturi de administrator ❌");
     }
 }

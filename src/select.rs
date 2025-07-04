@@ -1,13 +1,21 @@
 //! Ce variantă se potrivește calculatorului și ce trebuie făcut cu fiecare program.
 
-use crate::manifest::{Program, Variant};
+use crate::manifest::{Kind, Program, Variant};
 use crate::system::{Arch, SystemInfo};
 use crate::version;
 
 /// Întâi o variantă exactă; pe 64 de biți merge și una de 32.
 pub fn choose_variant<'a>(p: &'a Program, sys: &SystemInfo) -> Option<&'a Variant> {
+    if sys.linux.is_some() {
+        // Pe distribuțiile Debian: întâi pachetul nativ, apoi AppImage, rpm doar prin alien.
+        let fits = |v: &&Variant| v.kind.is_linux() && (v.arch == sys.arch || v.arch == Arch::X86);
+        return [Kind::Deb, Kind::AppImage, Kind::Rpm]
+            .into_iter()
+            .find_map(|kind| p.variants.iter().filter(fits).find(|v| v.kind == kind && v.arch == sys.arch)
+                .or_else(|| p.variants.iter().filter(fits).find(|v| v.kind == kind)));
+    }
     let win = sys.win?;
-    let fits = |v: &&Variant, arch| v.windows.contains(&win) && v.arch == arch;
+    let fits = |v: &&Variant, arch| !v.kind.is_linux() && v.windows.contains(&win) && v.arch == arch;
     p.variants
         .iter()
         .find(|v| fits(v, sys.arch))
@@ -28,9 +36,13 @@ pub fn status(p: &Result<Program, String>, sys: &SystemInfo, installed: Option<&
         Ok(p) => p,
         Err(e) => return Status::Invalid(e.clone()),
     };
-    let Some(win) = sys.win else { return Status::Unsupported("Windows nesuportat".into()) };
     if choose_variant(p, sys).is_none() {
-        return Status::Unsupported(format!("nu există variantă pentru {} ({})", win.name(), sys.arch.bits()));
+        let os = match (&sys.linux, sys.win) {
+            (Some(_), _) => "Linux",
+            (None, Some(win)) => win.name(),
+            (None, None) => return Status::Unsupported("Windows nesuportat".into()),
+        };
+        return Status::Unsupported(format!("nu există variantă pentru {os} ({})", sys.arch.bits()));
     }
     match installed {
         None => Status::Missing,
@@ -79,7 +91,7 @@ mod tests {
     }
 
     fn sys(win: Option<WinVer>, arch: Arch) -> SystemInfo {
-        SystemInfo { win, arch, admin: true, computer: "PC".into() }
+        SystemInfo { win, arch, admin: true, computer: "PC".into(), linux: None }
     }
 
     #[test]
@@ -125,6 +137,40 @@ mod tests {
         assert_eq!(s.label("3.0.4"), "nu e instalat");
         assert!(!s.default_checked(false));
         assert!(s.default_checked(true));
+    }
+
+    fn linux_program(kinds: &[&str]) -> Program {
+        let mut text = "name = \"P\"\nversion = \"1\"\ncategory = \"C\"\n[detect]\npackage = \"p\"\n".to_string();
+        for kind in kinds {
+            text += &format!("[[variant]]\narch = \"x64\"\nkind = \"{kind}\"\nfile = \"p.{kind}\"\n");
+        }
+        toml::from_str(&text).unwrap()
+    }
+
+    fn linux() -> SystemInfo {
+        SystemInfo { win: None, arch: Arch::X64, admin: true, computer: "PC".into(), linux: Some("Ubuntu".into()) }
+    }
+
+    #[test]
+    fn linux_prefers_deb_then_appimage() {
+        let p = linux_program(&["rpm", "appimage", "deb"]);
+        assert_eq!(choose_variant(&p, &linux()).unwrap().file, "p.deb");
+        let p = linux_program(&["rpm", "appimage"]);
+        assert_eq!(choose_variant(&p, &linux()).unwrap().file, "p.appimage");
+        let p = linux_program(&["rpm"]);
+        assert_eq!(choose_variant(&p, &linux()).unwrap().file, "p.rpm");
+    }
+
+    #[test]
+    fn windows_ignores_linux_variants() {
+        let p = linux_program(&["deb"]);
+        assert!(choose_variant(&p, &sys(Some(WinVer::Win10), Arch::X64)).is_none());
+    }
+
+    #[test]
+    fn linux_without_variant_label() {
+        let p = Ok(program(&[(r#"["10"]"#, "x86")], true));
+        assert_eq!(status(&p, &linux(), None).label("1"), "nu există variantă pentru Linux (64 biți)");
     }
 
     #[test]

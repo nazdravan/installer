@@ -1,6 +1,6 @@
 //! Fișierul-descriere `program.toml` de lângă fiecare installer.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
 
@@ -13,18 +13,33 @@ pub enum Kind {
     Exe,
     /// Program portabil: se dezarhivează în `target` și primește scurtături.
     Zip,
+    Deb,
+    /// Pe distribuțiile Debian se instalează prin `alien`.
+    Rpm,
+    /// Se dezarhivează în `target` (implicit `/opt/<nume>`), fără FUSE.
+    #[serde(rename = "appimage")]
+    AppImage,
+}
+
+impl Kind {
+    pub fn is_linux(self) -> bool {
+        matches!(self, Kind::Deb | Kind::Rpm | Kind::AppImage)
+    }
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Detect {
-    /// Începutul lui `DisplayName` din cheile `Uninstall` din registry.
-    pub registry_name: String,
+    /// Windows: începutul lui `DisplayName` din cheile `Uninstall` din registry.
+    pub registry_name: Option<String>,
+    /// Linux: numele exact al pachetului pentru `dpkg-query`.
+    pub package: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Variant {
+    #[serde(default)]
     pub windows: Vec<WinVer>,
     pub arch: Arch,
     pub kind: Kind,
@@ -59,6 +74,17 @@ pub struct Program {
     pub variants: Vec<Variant>,
 }
 
+impl Variant {
+    /// Mapa în care se instalează un program portabil (zip sau AppImage).
+    pub fn target_dir(&self, program_name: &str) -> Option<PathBuf> {
+        match (&self.target, self.kind) {
+            (Some(t), _) => Some(PathBuf::from(t)),
+            (None, Kind::AppImage) => Some(PathBuf::from(format!("/opt/{}", program_name.to_lowercase().replace(' ', "-")))),
+            _ => None,
+        }
+    }
+}
+
 fn yes() -> bool {
     true
 }
@@ -87,8 +113,11 @@ pub fn parse(text: &str, dir: &Path) -> Result<Program, String> {
             Kind::Zip if v.target.is_none() || v.shortcut.is_none() => {
                 return Err("varianta zip are nevoie de „target” și „shortcut”".into());
             }
-            Kind::Msi | Kind::Exe if program.detect.is_none() => {
+            Kind::Msi | Kind::Exe if program.detect.as_ref().and_then(|d| d.registry_name.as_ref()).is_none() => {
                 return Err("variantele msi și exe au nevoie de secțiunea [detect]".into());
+            }
+            Kind::Deb | Kind::Rpm if program.detect.as_ref().and_then(|d| d.package.as_ref()).is_none() => {
+                return Err("variantele deb și rpm au nevoie de [detect] package".into());
             }
             _ => {}
         }
@@ -194,6 +223,26 @@ shortcut = "Furnica.exe"
         let dir = dir_with(&["furnica.zip"]);
         let err = parse(&format!("nume = \"x\"\n{FURNICA}"), dir.path()).unwrap_err();
         assert!(err.starts_with("câmp necunoscut „nume”"), "{err}");
+    }
+
+    #[test]
+    fn deb_without_package_is_error() {
+        let dir = dir_with(&["a.deb"]);
+        let text = "name = \"A\"\nversion = \"1\"\ncategory = \"B\"\n[detect]\nregistry_name = \"A\"\n[[variant]]\narch = \"x64\"\nkind = \"deb\"\nfile = \"a.deb\"\n";
+        assert_eq!(parse(text, dir.path()).unwrap_err(), "variantele deb și rpm au nevoie de [detect] package");
+        let ok = text.replace("registry_name = \"A\"", "package = \"a\"");
+        assert!(parse(&ok, dir.path()).is_ok());
+    }
+
+    #[test]
+    fn appimage_default_target() {
+        let dir = dir_with(&["s.AppImage"]);
+        let text = "name = \"Sumatra PDF\"\nversion = \"1\"\ncategory = \"B\"\n[[variant]]\narch = \"x64\"\nkind = \"appimage\"\nfile = \"s.AppImage\"\n";
+        let p = parse(text, dir.path()).unwrap();
+        assert_eq!(p.variants[0].kind, Kind::AppImage);
+        assert!(p.variants[0].kind.is_linux());
+        assert!(!Kind::Zip.is_linux());
+        assert_eq!(p.variants[0].target_dir(&p.name), Some(PathBuf::from("/opt/sumatra-pdf")));
     }
 
     #[test]
