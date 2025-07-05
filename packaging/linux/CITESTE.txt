@@ -1,0 +1,15 @@
+INSTALATOR ȘCOALĂ — pentru Linux pe 64 de biți (Ubuntu, Linux Mint, Q4OS, antiX)
+
+Pornire: deschideți un terminal și scrieți
+  sh /media/<utilizator>/<stick>/instalator.sh
+(sau trageți instalator.sh în terminal după „sh ”). Se cere parola de administrator.
+Bifați programele dorite și apăsați „Instalează”. Programele se instalează pe rând;
+la sfârșit apare un rezumat.
+
+  instalator       programul
+  instalator.sh    pornește programul cu drepturi de administrator
+  Linux/           câte o mapă pentru fiecare program, cu program.toml
+  jurnal/          creat la prima instalare: ce s-a întâmplat pe fiecare calculator
+
+Tipuri de pachete: deb (recomandat), AppImage (se pune în /opt, apare în meniu),
+rpm (doar dacă e instalat alien: sudo apt install alien).
