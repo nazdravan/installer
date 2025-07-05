@@ -96,13 +96,27 @@ pub fn detect() -> SystemInfo {
     }
 }
 
-/// Pe alte sisteme (dezvoltare pe macOS/Linux) se pretinde un Windows 10 obișnuit.
-#[cfg(not(windows))]
+#[cfg(target_os = "linux")]
+pub fn detect() -> SystemInfo {
+    let read = |path| std::fs::read_to_string(path).unwrap_or_default();
+    let hostname = read("/etc/hostname").trim().to_string();
+    SystemInfo {
+        win: None,
+        arch: if cfg!(target_arch = "x86_64") { Arch::X64 } else { Arch::X86 },
+        admin: unsafe { libc::geteuid() } == 0,
+        computer: if hostname.is_empty() { "calculator".into() } else { hostname },
+        linux: Some(pretty_name(&read("/etc/os-release")).unwrap_or_else(|| "Linux".into())),
+    }
+}
+
+/// Pe alte sisteme (dezvoltare pe macOS) se pretinde un Windows 10 obișnuit.
+#[cfg(not(any(windows, target_os = "linux")))]
 pub fn detect() -> SystemInfo {
     SystemInfo { win: Some(WinVer::Win10), arch: Arch::X64, admin: false, computer: "test".into(), linux: None }
 }
 
 /// Valoarea lui `PRETTY_NAME` din `/etc/os-release`.
+#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
 pub fn pretty_name(os_release: &str) -> Option<String> {
     let value = os_release.lines().find_map(|l| l.strip_prefix("PRETTY_NAME="))?;
     Some(value.trim().trim_matches('"').to_string())

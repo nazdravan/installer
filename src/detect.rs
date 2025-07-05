@@ -1,7 +1,5 @@
 //! Ce versiune a unui program e deja instalată pe calculator.
 
-use std::path::Path;
-
 use crate::manifest::{Kind, Program, Variant};
 use crate::version;
 
@@ -11,12 +9,31 @@ pub const MARKER: &str = ".instalator-versiune";
 /// Perechile (`DisplayName`, `DisplayVersion`) din cheile `Uninstall`.
 pub trait Registry {
     fn uninstall_entries(&self) -> Vec<(String, String)>;
+
+    /// Linux: versiunea pachetului instalat, cum o dă dpkg.
+    fn package_version(&self, _package: &str) -> Option<String> {
+        None
+    }
+}
+
+/// Versiunea Debian fără epoch (`1:2.3-1ubuntu2` → `2.3-1ubuntu2`); revizia rămâne și contează
+/// doar ca segmente în plus la comparare.
+pub fn debian_version(v: &str) -> String {
+    v.split_once(':').map_or(v, |(_, rest)| rest).to_string()
 }
 
 pub fn installed_version(p: &Program, v: &Variant, reg: &dyn Registry) -> Option<String> {
-    if v.kind == Kind::Zip {
-        let marker = Path::new(v.target.as_deref()?).join(MARKER);
-        return std::fs::read_to_string(marker).ok().map(|s| s.trim().to_string());
+    match v.kind {
+        Kind::Zip | Kind::AppImage => {
+            let marker = v.target_dir(&p.name)?.join(MARKER);
+            return std::fs::read_to_string(marker).ok().map(|s| s.trim().to_string());
+        }
+        Kind::Deb | Kind::Rpm => {
+            // Un rpm instalat prin alien devine tot un pachet dpkg.
+            let package = p.detect.as_ref()?.package.as_deref()?;
+            return reg.package_version(package).map(|v| debian_version(&v));
+        }
+        Kind::Msi | Kind::Exe => {}
     }
     let prefix = p.detect.as_ref()?.registry_name.as_ref()?.to_lowercase();
     reg.uninstall_entries()
@@ -24,6 +41,27 @@ pub fn installed_version(p: &Program, v: &Variant, reg: &dyn Registry) -> Option
         .filter(|(name, _)| name.to_lowercase().starts_with(&prefix))
         .map(|(_, version)| version)
         .max_by(|a, b| version::compare(a, b))
+}
+
+#[cfg(target_os = "linux")]
+pub struct Dpkg;
+
+#[cfg(target_os = "linux")]
+impl Registry for Dpkg {
+    fn uninstall_entries(&self) -> Vec<(String, String)> {
+        Vec::new()
+    }
+
+    fn package_version(&self, package: &str) -> Option<String> {
+        let out = std::process::Command::new("dpkg-query")
+            .args(["-W", "-f", "${Status}\t${Version}", package])
+            .output()
+            .ok()?;
+        let text = String::from_utf8_lossy(&out.stdout);
+        let (status, version) = text.split_once('\t')?;
+        // „deinstall ok config-files”: pachetul a fost șters, au rămas doar setările.
+        (out.status.success() && status.ends_with(" installed")).then(|| version.trim().to_string())
+    }
 }
 
 #[cfg(windows)]
@@ -66,6 +104,40 @@ mod tests {
         fn uninstall_entries(&self) -> Vec<(String, String)> {
             self.0.iter().map(|(n, v)| (n.to_string(), v.to_string())).collect()
         }
+
+        fn package_version(&self, package: &str) -> Option<String> {
+            self.0.iter().find(|(n, _)| *n == package).map(|(_, v)| v.to_string())
+        }
+    }
+
+    #[test]
+    fn dpkg_version_strips_epoch() {
+        assert_eq!(debian_version("1:2.3-1ubuntu2"), "2.3-1ubuntu2");
+        assert_eq!(debian_version("3.0.5"), "3.0.5");
+        assert!(version::compare(&debian_version("1:2.3-1ubuntu2"), "2.3").is_ge());
+    }
+
+    #[test]
+    fn deb_uses_package_version() {
+        let p: Program = toml::from_str(
+            "name = \"Furnica\"\nversion = \"3.0.5\"\ncategory = \"C\"\n[detect]\npackage = \"furnica\"\n[[variant]]\narch = \"x64\"\nkind = \"deb\"\nfile = \"f.deb\"\n",
+        )
+        .unwrap();
+        let reg = FakeRegistry(vec![("furnica-data", "9"), ("furnica", "1:3.0.4")]);
+        assert_eq!(installed_version(&p, &p.variants[0], &reg).as_deref(), Some("3.0.4"));
+        assert_eq!(installed_version(&p, &p.variants[0], &FakeRegistry(vec![])), None);
+    }
+
+    #[test]
+    fn appimage_reads_marker() {
+        let dir = tempfile::tempdir().unwrap();
+        let p: Program = toml::from_str(&format!(
+            "name = \"P\"\nversion = \"1\"\ncategory = \"C\"\n[[variant]]\narch = \"x64\"\nkind = \"appimage\"\nfile = \"p.AppImage\"\ntarget = '{}'\n",
+            dir.path().display()
+        ))
+        .unwrap();
+        std::fs::write(dir.path().join(MARKER), "0.9").unwrap();
+        assert_eq!(installed_version(&p, &p.variants[0], &FakeRegistry(vec![])).as_deref(), Some("0.9"));
     }
 
     fn program(kind: &str, target: &str) -> Program {
