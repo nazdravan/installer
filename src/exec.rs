@@ -36,7 +36,15 @@ pub fn run_process(exe: &Path, args: &[String], timeout: Duration) -> Result<i32
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
         command.creation_flags(CREATE_NO_WINDOW);
     }
-    let mut child = command.spawn().map_err(|e| format!("nu pot porni {}: {e}", exe.display()))?;
+    wait_with_timeout(command, exe, timeout)
+}
+
+fn wait_with_timeout(mut command: Command, exe: &Path, timeout: Duration) -> Result<i32, String> {
+    let mut child = command.spawn().map_err(|e| match e.kind() {
+        std::io::ErrorKind::NotFound if exe == Path::new("alien") => "lipsește alien (sudo apt install alien)".to_string(),
+        std::io::ErrorKind::NotFound => format!("lipsește {}", exe.display()),
+        _ => format!("nu pot porni {}: {e}", exe.display()),
+    })?;
     let start = Instant::now();
     loop {
         match child.try_wait() {
@@ -56,20 +64,26 @@ pub fn run_process(exe: &Path, args: &[String], timeout: Duration) -> Result<i32
 /// înlocuită (programul e deschis), ea rămâne neatinsă.
 pub fn unzip_replace(zip: &Path, target: &Path) -> Result<(), String> {
     let staging = sibling(target, "nou");
-    let old = sibling(target, "vechi");
     let _ = std::fs::remove_dir_all(&staging);
-    let _ = std::fs::remove_dir_all(&old);
     if let Err(e) = extract(zip, &staging) {
         let _ = std::fs::remove_dir_all(&staging);
         return Err(e);
     }
+    replace_dir(&staging, target)
+}
+
+/// Pune `staging` în locul lui `target`. Dacă `target` nu poate fi mutat (program deschis),
+/// rămâne neatins, iar `staging` se șterge.
+fn replace_dir(staging: &Path, target: &Path) -> Result<(), String> {
+    let old = sibling(target, "vechi");
+    let _ = std::fs::remove_dir_all(&old);
     if target.exists() && std::fs::rename(target, &old).is_err() {
-        let _ = std::fs::remove_dir_all(&staging);
+        let _ = std::fs::remove_dir_all(staging);
         return Err(format!("nu pot înlocui {}: programul este deschis?", target.display()));
     }
-    if let Err(e) = std::fs::rename(&staging, target) {
+    if let Err(e) = std::fs::rename(staging, target) {
         let _ = std::fs::rename(&old, target);
-        let _ = std::fs::remove_dir_all(&staging);
+        let _ = std::fs::remove_dir_all(staging);
         return Err(format!("nu pot crea {}: {e}", target.display()));
     }
     let _ = std::fs::remove_dir_all(&old);
@@ -126,6 +140,92 @@ fn single_top_dir(entries: &[(PathBuf, bool)]) -> Option<PathBuf> {
     entries.iter().all(inside).then_some(top)
 }
 
+/// Intrarea din meniul de aplicații pentru un AppImage dezarhivat în `target`.
+#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
+pub fn desktop_entry(name: &str, target: &Path) -> String {
+    let t = target.display();
+    format!(
+        "[Desktop Entry]\nType=Application\nName={name}\nExec=\"{t}/AppRun\"\nIcon={t}/.DirIcon\nCategories=Education;\nTerminal=false\n"
+    )
+}
+
+#[cfg(unix)]
+fn execute_appimage(file: &Path, target: &Path, name: &str, version: &str, timeout: Duration) -> Outcome {
+    if let Err(e) = install_appimage(file, target, timeout) {
+        return Outcome::Failed(e);
+    }
+    if let Err(e) = std::fs::write(target.join(MARKER), version) {
+        return Outcome::Failed(format!("nu pot scrie versiunea: {e}"));
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let slug = name.to_lowercase().replace(' ', "-");
+        let entry = format!("/usr/share/applications/instalator-{slug}.desktop");
+        if let Err(e) = std::fs::write(&entry, desktop_entry(name, target)) {
+            eprintln!("nu pot crea {entry}: {e}");
+        }
+    }
+    #[cfg(not(target_os = "linux"))]
+    let _ = name;
+    Outcome::Ok
+}
+
+#[cfg(not(unix))]
+fn execute_appimage(file: &Path, _target: &Path, _name: &str, _version: &str, _timeout: Duration) -> Outcome {
+    Outcome::Failed(format!("AppImage merge doar pe Linux: {}", file.display()))
+}
+
+/// AppImage-ul se dezarhivează (`--appimage-extract`) în loc să fie rulat: așa nu are nevoie
+/// de FUSE, care lipsește pe Ubuntu 22.04 și mai nou.
+#[cfg(unix)]
+fn install_appimage(file: &Path, target: &Path, timeout: Duration) -> Result<(), String> {
+    use std::os::unix::fs::PermissionsExt;
+    let work = std::env::temp_dir().join(format!("instalator-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&work);
+    let result = (|| {
+        std::fs::create_dir_all(&work).map_err(|e| e.to_string())?;
+        let copy = work.join("program.AppImage");
+        std::fs::copy(file, &copy).map_err(|e| format!("nu pot copia {}: {e}", file.display()))?;
+        std::fs::set_permissions(&copy, std::fs::Permissions::from_mode(0o755)).map_err(|e| e.to_string())?;
+        let mut command = Command::new(&copy);
+        command.arg("--appimage-extract").current_dir(&work).stdout(std::process::Stdio::null());
+        match wait_with_timeout(command, &copy, timeout)? {
+            0 => {}
+            code => return Err(format!("dezarhivarea AppImage a eșuat (cod {code})")),
+        }
+        let staging = sibling(target, "nou");
+        let _ = std::fs::remove_dir_all(&staging);
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| format!("nu pot crea {}: {e}", parent.display()))?;
+        }
+        // squashfs-root e în /tmp, posibil pe altă partiție decât target: copiere, nu redenumire.
+        copy_dir(&work.join("squashfs-root"), &staging)?;
+        replace_dir(&staging, target)
+    })();
+    let _ = std::fs::remove_dir_all(&work);
+    result
+}
+
+#[cfg(unix)]
+fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
+    let err = |e: std::io::Error| format!("{}: {e}", from.display());
+    std::fs::create_dir_all(to).map_err(err)?;
+    for entry in std::fs::read_dir(from).map_err(err)? {
+        let entry = entry.map_err(err)?;
+        let (src, dst) = (entry.path(), to.join(entry.file_name()));
+        let kind = entry.file_type().map_err(err)?;
+        if kind.is_symlink() {
+            let link = std::fs::read_link(&src).map_err(err)?;
+            std::os::unix::fs::symlink(link, &dst).map_err(err)?;
+        } else if kind.is_dir() {
+            copy_dir(&src, &dst)?;
+        } else {
+            std::fs::copy(&src, &dst).map_err(err)?;
+        }
+    }
+    Ok(())
+}
+
 pub fn execute(action: &Action, v: &Variant) -> Outcome {
     match action {
         Action::Run { exe, args } => match run_process(exe, args, Duration::from_secs(v.timeout_min * 60)) {
@@ -144,6 +244,9 @@ pub fn execute(action: &Action, v: &Variant) -> Outcome {
             #[cfg(not(windows))]
             let _ = (name, shortcut_exe, desktop);
             Outcome::Ok
+        }
+        Action::AppImage { file, target, name, version } => {
+            execute_appimage(file, target, name, version, Duration::from_secs(v.timeout_min * 60))
         }
     }
 }
@@ -271,6 +374,41 @@ mod tests {
         std::fs::create_dir_all(target.parent().unwrap()).unwrap();
         let _ = unzip_replace(&zip, &target);
         assert!(!dir.path().join("t").join("afara.txt").exists());
+    }
+
+    #[test]
+    fn missing_alien_hint() {
+        let action = Action::Run { exe: "alien".into(), args: vec!["-i".into()] };
+        match execute(&action, &variant("")) {
+            Outcome::Failed(why) => assert!(why.contains("sudo apt install alien"), "{why}"),
+            other => panic!("{other:?}"),
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn appimage_extracts_into_target() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = tempfile::tempdir().unwrap();
+        // Un „AppImage” fals: la --appimage-extract creează squashfs-root, ca unul adevărat.
+        let file = dir.path().join("p.AppImage");
+        std::fs::write(&file, "#!/bin/sh\n[ \"$1\" = --appimage-extract ] && mkdir -p squashfs-root && echo x > squashfs-root/AppRun\n").unwrap();
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o644)).unwrap();
+        let target = dir.path().join("opt").join("p");
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        let action = Action::AppImage { file, target: target.clone(), name: "P".into(), version: "2.0".into() };
+        assert_eq!(execute(&action, &variant("")), Outcome::Ok);
+        assert!(target.join("AppRun").is_file());
+        assert_eq!(std::fs::read_to_string(target.join(MARKER)).unwrap(), "2.0");
+    }
+
+    #[test]
+    fn desktop_entry_format() {
+        let text = desktop_entry("Furnica", Path::new("/opt/furnica"));
+        assert!(text.starts_with("[Desktop Entry]\n"));
+        for line in ["Name=Furnica", "Exec=\"/opt/furnica/AppRun\"", "Icon=/opt/furnica/.DirIcon", "Type=Application", "Categories=Education;"] {
+            assert!(text.lines().any(|l| l == line), "{line}\n{text}");
+        }
     }
 
     #[test]

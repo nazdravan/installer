@@ -8,6 +8,7 @@ use crate::manifest::{Kind, Program, Variant};
 pub enum Action {
     Run { exe: PathBuf, args: Vec<String> },
     Unzip { zip: PathBuf, target: PathBuf, shortcut_exe: String, name: String, desktop: bool, version: String },
+    AppImage { file: PathBuf, target: PathBuf, name: String, version: String },
 }
 
 /// `folder` este mapa programului de pe stick.
@@ -29,8 +30,24 @@ pub fn action_for(p: &Program, v: &Variant, folder: &Path) -> Action {
             desktop: v.desktop,
             version: p.version.clone(),
         },
-        Kind::Deb | Kind::Rpm | Kind::AppImage => todo!("instalarea pe Linux"),
+        Kind::Deb => {
+            // apt-get instalează un fișier local doar dacă primește o cale (cu „/”).
+            let mut args: Vec<String> = ["DEBIAN_FRONTEND=noninteractive", "apt-get", "install", "-y"].map(String::from).to_vec();
+            args.push(absolute(&file));
+            Action::Run { exe: "env".into(), args }
+        }
+        Kind::Rpm => Action::Run { exe: "alien".into(), args: vec!["-i".into(), "--scripts".into(), absolute(&file)] },
+        Kind::AppImage => Action::AppImage {
+            file,
+            target: v.target_dir(&p.name).unwrap_or_default(),
+            name: p.name.clone(),
+            version: p.version.clone(),
+        },
     }
+}
+
+fn absolute(path: &Path) -> String {
+    std::path::absolute(path).unwrap_or_else(|_| path.to_path_buf()).display().to_string()
 }
 
 impl Action {
@@ -42,7 +59,9 @@ impl Action {
                 .map(|a| format!("\"{a}\""))
                 .collect::<Vec<_>>()
                 .join(" "),
-            Action::Unzip { zip, target, .. } => format!("dezarhivare {} → {}", zip.display(), target.display()),
+            Action::Unzip { zip, target, .. } | Action::AppImage { file: zip, target, .. } => {
+                format!("dezarhivare {} → {}", zip.display(), target.display())
+            }
         }
     }
 }
@@ -79,6 +98,50 @@ mod tests {
         assert_eq!(
             action_for(&p, &p.variants[0], Path::new("F")),
             Action::Run { exe: Path::new("F").join("setup.exe"), args: vec!["/S".into()] }
+        );
+    }
+
+    fn linux(kind: &str) -> Program {
+        toml::from_str(&format!(
+            "name = \"Furnica\"\nversion = \"3.0.5\"\ncategory = \"C\"\n[detect]\npackage = \"furnica\"\n[[variant]]\narch = \"x64\"\nkind = \"{kind}\"\nfile = \"f.{kind}\"\n"
+        ))
+        .unwrap()
+    }
+
+    #[test]
+    fn deb_command() {
+        let p = linux("deb");
+        let file = std::path::absolute(Path::new("F").join("f.deb")).unwrap().display().to_string();
+        assert_eq!(
+            action_for(&p, &p.variants[0], Path::new("F")),
+            Action::Run {
+                exe: "env".into(),
+                args: ["DEBIAN_FRONTEND=noninteractive", "apt-get", "install", "-y", &file].map(String::from).to_vec(),
+            }
+        );
+    }
+
+    #[test]
+    fn rpm_command() {
+        let p = linux("rpm");
+        let file = std::path::absolute(Path::new("F").join("f.rpm")).unwrap().display().to_string();
+        assert_eq!(
+            action_for(&p, &p.variants[0], Path::new("F")),
+            Action::Run { exe: "alien".into(), args: ["-i", "--scripts", &file].map(String::from).to_vec() }
+        );
+    }
+
+    #[test]
+    fn appimage_action() {
+        let p = linux("appimage");
+        assert_eq!(
+            action_for(&p, &p.variants[0], Path::new("F")),
+            Action::AppImage {
+                file: Path::new("F").join("f.appimage"),
+                target: "/opt/furnica".into(),
+                name: "Furnica".into(),
+                version: "3.0.5".into(),
+            }
         );
     }
 
