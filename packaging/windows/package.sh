@@ -2,7 +2,10 @@
 # Construiește Instalator.exe pentru Windows 8 / 10 / 11 (un singur .exe pe 32 de biți, care
 # merge și pe 64 de biți) și pregătește conținutul stick-ului. Merge pe macOS și pe Linux.
 #
-# Rezultatul: dist/stick/ și dist/instalator-<versiune>-stick.zip
+# Rezultatul: dist/stick-windows/ și dist/instalator-<versiune>-windows.zip
+#
+# Arhivele portabile ale Furnicii și Cangurului se caută în $ASSETS (dacă e setat, de ex. în
+# workflow-ul de release), apoi în ../furnica/dist/release și ../cangurul/dist/release.
 #
 # Necesită: curl, zstd, 7-Zip, compilatorul MinGW pentru 32 de biți
 #   macOS:         brew install mingw-w64 sevenzip zstd
@@ -14,7 +17,8 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 VERSION="$(sed -n '/^\[package\]/,/^\[/{s/^version = "\(.*\)"/\1/p;}' Cargo.toml | head -1)"
 CACHE=$ROOT/.cache/win7
-STICK=$ROOT/dist/stick
+STICK=$ROOT/dist/stick-windows
+ZIP=$ROOT/dist/instalator-$VERSION-windows.zip
 TARGET=i686-win7-windows-gnu
 HERE=$ROOT/packaging/windows
 
@@ -80,7 +84,7 @@ if [ ! -f "$CACHE/mesa/x86/libgallium_wgl.dll" ]; then
 fi
 
 # 5. Conținutul stick-ului.
-rm -rf "$STICK" "$ROOT/dist/instalator-$VERSION-stick.zip"
+rm -rf "$STICK" "$ZIP"
 mkdir -p "$STICK/soft-gl"
 cp "target/$TARGET/release/instalator.exe" "$STICK/Instalator.exe"
 cp "$CACHE"/mesa/x86/*.dll "$STICK/soft-gl/"
@@ -93,7 +97,8 @@ find "$STICK" -name .DS_Store -delete
 for app in furnica cangurul; do
     Name="$(tr '[:lower:]' '[:upper:]' <<<"${app:0:1}")${app:1}"
     toml="$STICK/Windows/$Name/program.toml"
-    zip=$(ls -t "$ROOT/../$app/dist/release/$app"-*-windows7-x86-portable.zip 2>/dev/null | head -1 || true)
+    zip=$(ls -t ${ASSETS:+"$ASSETS"/$app-*-windows7-x86-portable.zip} \
+        "$ROOT/../$app/dist/release/$app"-*-windows7-x86-portable.zip 2>/dev/null | head -1 || true)
     if [ -n "$zip" ]; then
         v=$(basename "$zip" | sed "s/^$app-\(.*\)-windows7-x86-portable.zip$/\1/")
         cp "$zip" "$STICK/Windows/$Name/"
@@ -107,5 +112,5 @@ for app in furnica cangurul; do
 done
 
 mkdir -p "$ROOT/dist"
-(cd "$STICK" && "$SEVENZ" a -tzip -mx9 "$ROOT/dist/instalator-$VERSION-stick.zip" . >/dev/null)
-echo "Gata: $STICK și dist/instalator-$VERSION-stick.zip"
+(cd "$STICK" && "$SEVENZ" a -tzip -mx9 "$ZIP" . >/dev/null)
+echo "Gata: $STICK și $ZIP"

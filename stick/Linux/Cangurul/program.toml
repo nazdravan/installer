@@ -1,0 +1,14 @@
+# Descrierea programului pentru Instalator (Linux). Câmpurile sunt explicate în README.md.
+# packaging/linux/package.sh actualizează singur „version” și „file” după pachetul găsit.
+name = "Cangurul"
+version = "3.0.6"
+category = "Educațional"
+description = "Executantul Cangurul: cangurul desenează linii după un program cu comenzi simple"
+
+[detect]
+package = "cangurul"
+
+[[variant]]
+arch = "x64"
+kind = "deb"
+file = "cangurul-3.0.6-linux-x86_64.deb"

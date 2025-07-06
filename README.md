@@ -1,8 +1,11 @@
 # Instalator școală
 
 Un program care pornește de pe stick pe calculatoarele din laborator (Windows 8 / 8.1 /
-10 / 11, 32 și 64 de biți) și instalează sau actualizează programele de pe stick, fără să
-apăsați „Next” în fiecare installer.
+10 / 11, 32 și 64 de biți; Linux pe 64 de biți: Ubuntu, Linux Mint, Q4OS, antiX) și instalează
+sau actualizează programele de pe stick, fără să apăsați „Next” în fiecare installer.
+
+Arhivele gata de pus pe stick sunt pe pagina [Releases](../../releases):
+`instalator-<versiune>-windows.zip` și `instalator-<versiune>-linux.zip`.
 
 ![fereastra](docs/fereastra.png)
 
@@ -149,12 +152,54 @@ Un program portabil (`zip`) se dezarhivează în `target`. Versiunea instalată 
 e deschis, mapa veche rămâne neatinsă și programul primește ❌. Vedeți
 `stick/Windows/Furnica/program.toml`.
 
+## Linux
+
+Pe stick-ul de Linux, mapa cu programe se numește `Linux/` și are aceeași structură. Pornire
+dintr-un terminal (stick-urile FAT32 nu permit rularea directă a programelor):
+
+```
+sh /media/<utilizator>/<stick>/instalator.sh
+```
+
+Scriptul cere parola o singură dată (fereastra sistemului sau, pe antiX, `sudo` în terminal)
+și pornește instalatorul ca root.
+
+Tipuri de pachete (`kind`):
+
+| `kind` | cum se instalează | versiunea instalată |
+|---|---|---|
+| `deb` | `apt-get install -y ./fișier.deb` (aduce și dependențele) | `dpkg-query` după `[detect] package` |
+| `appimage` | se dezarhivează în `target` (implicit `/opt/<nume>`), apare în meniu | marcajul din `target` |
+| `rpm` | `alien -i` (distribuțiile Debian nu au rpm nativ; cere `sudo apt install alien`) | `dpkg-query` după `[detect] package` |
+
+Când un program are mai multe variante, se alege deb, apoi AppImage, apoi rpm. Pe Linux
+câmpul `windows` lipsește. Exemplu:
+
+```toml
+name = "Furnica"
+version = "3.0.5"
+category = "Educațional"
+
+[detect]
+package = "furnica"        # numele pachetului: dpkg -l | grep furnica
+
+[[variant]]
+arch = "x64"
+kind = "deb"
+file = "furnica-3.0.5-linux-x86_64.deb"
+```
+
 ## Construire
 
 ```
 cargo test                                   # logica, pe orice sistem
-packaging/windows/package.sh                 # dist/stick/ și dist/instalator-<versiune>-stick.zip
+packaging/windows/package.sh                 # dist/instalator-<versiune>-windows.zip
+packaging/linux/package.sh                   # dist/instalator-<versiune>-linux.zip (pe Linux)
 ```
+
+La fiecare push pe `main` cu o versiune nouă în `Cargo.toml`, workflow-ul
+`.github/workflows/release.yml` construiește ambele arhive (cu Furnica și Cangurul descărcate
+din release-urile lor) și publică release-ul `v<versiune>`.
 
 `package.sh` merge pe macOS și pe Linux (`brew install mingw-w64 sevenzip zstd` sau
 `apt install gcc-mingw-w64-i686 7zip zstd`). Construiește, ca și Cangurul, pentru ținta

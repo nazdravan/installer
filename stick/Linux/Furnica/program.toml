@@ -1,0 +1,14 @@
+# Descrierea programului pentru Instalator (Linux). Câmpurile sunt explicate în README.md.
+# packaging/linux/package.sh actualizează singur „version” și „file” după pachetul găsit.
+name = "Furnica"
+version = "3.0.5"
+category = "Educațional"
+description = "Executantul Furnica pentru învățarea algoritmilor"
+
+[detect]
+package = "furnica"
+
+[[variant]]
+arch = "x64"
+kind = "deb"
+file = "furnica-3.0.5-linux-x86_64.deb"
