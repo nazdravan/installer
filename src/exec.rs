@@ -351,6 +351,10 @@ mod tests {
     #[test]
     fn unzip_replace_keeps_old_on_failure() {
         use std::os::unix::fs::PermissionsExt;
+        // root ignoră drepturile de acces, deci blocajul nu poate fi simulat așa.
+        if unsafe { libc::geteuid() } == 0 {
+            return;
+        }
         let dir = tempfile::tempdir().unwrap();
         let zip = dir.path().join("a.zip");
         make_zip(&zip, &["Furnica.exe"]);
@@ -400,6 +404,39 @@ mod tests {
         assert_eq!(execute(&action, &variant("")), Outcome::Ok);
         assert!(target.join("AppRun").is_file());
         assert_eq!(std::fs::read_to_string(target.join(MARKER)).unwrap(), "2.0");
+    }
+
+    /// Instalare reală cu apt-get și verificare cu dpkg. Cere root și Debian/Ubuntu, deci rulează
+    /// doar explicit, de ex. în container: `cargo test -- --ignored real_deb_install`.
+    #[cfg(target_os = "linux")]
+    #[test]
+    #[ignore]
+    fn real_deb_install() {
+        use crate::detect::{Dpkg, Registry};
+        let dir = tempfile::tempdir().unwrap();
+        let pkg = dir.path().join("pkg");
+        std::fs::create_dir_all(pkg.join("DEBIAN")).unwrap();
+        std::fs::create_dir_all(pkg.join("usr/share/doc/instalator-test")).unwrap();
+        std::fs::write(pkg.join("usr/share/doc/instalator-test/x"), "x").unwrap();
+        std::fs::write(
+            pkg.join("DEBIAN/control"),
+            "Package: instalator-test\nVersion: 1:2.5-1\nArchitecture: all\nMaintainer: t <t@t>\nDescription: test\n",
+        )
+        .unwrap();
+        let deb = dir.path().join("instalator-test.deb");
+        assert!(Command::new("dpkg-deb").args(["--build"]).arg(&pkg).arg(&deb).status().unwrap().success());
+
+        let p: crate::manifest::Program = toml::from_str(
+            "name = \"T\"\nversion = \"2.5\"\ncategory = \"C\"\n[detect]\npackage = \"instalator-test\"\n[[variant]]\narch = \"x64\"\nkind = \"deb\"\nfile = \"instalator-test.deb\"\n",
+        )
+        .unwrap();
+        let action = crate::command::action_for(&p, &p.variants[0], dir.path());
+        assert_eq!(execute(&action, &p.variants[0]), Outcome::Ok);
+        assert_eq!(Dpkg.package_version("instalator-test").as_deref(), Some("1:2.5-1"));
+        let installed = crate::detect::installed_version(&p, &p.variants[0], &Dpkg);
+        assert_eq!(installed.as_deref(), Some("2.5-1"));
+        let _ = Command::new("dpkg").args(["--purge", "instalator-test"]).status();
+        assert_eq!(Dpkg.package_version("instalator-test"), None);
     }
 
     #[test]
