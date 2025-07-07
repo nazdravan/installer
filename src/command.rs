@@ -32,7 +32,22 @@ pub fn action_for(p: &Program, v: &Variant, folder: &Path) -> Action {
         },
         Kind::Deb => {
             // apt-get instalează un fișier local doar dacă primește o cale (cu „/”).
-            let mut args: Vec<String> = ["DEBIAN_FRONTEND=noninteractive", "apt-get", "install", "-y"].map(String::from).to_vec();
+            // Așteaptă până la 5 minute dacă actualizările automate țin ocupat dpkg; la fișierele de
+            // configurare modificate păstrează varianta existentă, fără să întrebe.
+            let mut args: Vec<String> = [
+                "DEBIAN_FRONTEND=noninteractive",
+                "apt-get",
+                "install",
+                "-y",
+                "-o",
+                "DPkg::Lock::Timeout=300",
+                "-o",
+                "Dpkg::Options::=--force-confdef",
+                "-o",
+                "Dpkg::Options::=--force-confold",
+            ]
+            .map(String::from)
+            .to_vec();
             args.push(absolute(&file));
             Action::Run { exe: "env".into(), args }
         }
@@ -116,7 +131,21 @@ mod tests {
             action_for(&p, &p.variants[0], Path::new("F")),
             Action::Run {
                 exe: "env".into(),
-                args: ["DEBIAN_FRONTEND=noninteractive", "apt-get", "install", "-y", &file].map(String::from).to_vec(),
+                args: [
+                    "DEBIAN_FRONTEND=noninteractive",
+                    "apt-get",
+                    "install",
+                    "-y",
+                    "-o",
+                    "DPkg::Lock::Timeout=300",
+                    "-o",
+                    "Dpkg::Options::=--force-confdef",
+                    "-o",
+                    "Dpkg::Options::=--force-confold",
+                    &file,
+                ]
+                .map(String::from)
+                .to_vec(),
             }
         );
     }

@@ -5,7 +5,7 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 
 use crate::command::Action;
-use crate::detect::MARKER;
+use crate::detect::{self, MARKER};
 use crate::manifest::Variant;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -27,35 +27,148 @@ pub fn classify(code: i32, v: &Variant) -> Outcome {
 
 /// Rulează programul și așteaptă cel mult `timeout`. Un installer care, în ciuda cheilor
 /// silențioase, deschide o fereastră și așteaptă un click e oprit, ca să nu blocheze coada.
-pub fn run_process(exe: &Path, args: &[String], timeout: Duration) -> Result<i32, String> {
+/// Întoarce codul de ieșire și ultima linie scrisă pe stderr (de ex. mesajul lui apt).
+pub fn run_process(exe: &Path, args: &[String], timeout: Duration) -> Result<(i32, String), String> {
     let mut command = Command::new(exe);
-    command.args(args);
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
         command.creation_flags(CREATE_NO_WINDOW);
+        for arg in args {
+            command.raw_arg(windows_arg(arg));
+        }
     }
+    #[cfg(not(windows))]
+    command.args(args);
     wait_with_timeout(command, exe, timeout)
 }
 
-fn wait_with_timeout(mut command: Command, exe: &Path, timeout: Duration) -> Result<i32, String> {
+/// Pornește comanda și o așteaptă împreună cu procesele pornite de ea (un setup.exe care pornește
+/// setup.tmp, apt-get care pornește dpkg): la depășirea timpului se opresc toate, altfel ar ține
+/// ocupat Windows Installer sau lacătul lui dpkg pentru programele următoare.
+fn wait_with_timeout(mut command: Command, exe: &Path, timeout: Duration) -> Result<(i32, String), String> {
+    use std::io::BufRead;
+    use std::process::Stdio;
+    use std::sync::{Arc, Mutex};
+
+    // Fără stdin: dpkg sau un installer nu are cum să aștepte un răspuns din terminal.
+    command.stdin(Stdio::null()).stderr(Stdio::piped());
+    #[cfg(unix)]
+    std::os::unix::process::CommandExt::process_group(&mut command, 0);
     let mut child = command.spawn().map_err(|e| match e.kind() {
         std::io::ErrorKind::NotFound if exe == Path::new("alien") => "lipsește alien (sudo apt install alien)".to_string(),
         std::io::ErrorKind::NotFound => format!("lipsește {}", exe.display()),
         _ => format!("nu pot porni {}: {e}", exe.display()),
     })?;
-    let start = Instant::now();
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok(status.code().unwrap_or(-1)),
-            Ok(None) if start.elapsed() >= timeout => {
-                let _ = child.kill();
-                let _ = child.wait();
-                return Err(format!("a depășit timpul ({} min)", timeout.as_secs().div_ceil(60)));
+    #[cfg(windows)]
+    let job = job::Job::for_child(&child);
+
+    // Firul nu se așteaptă la sfârșit: un proces rămas pornit poate ține pipe-ul deschis.
+    let last_line = Arc::new(Mutex::new(String::new()));
+    if let Some(stderr) = child.stderr.take() {
+        let last_line = Arc::clone(&last_line);
+        std::thread::spawn(move || {
+            for line in std::io::BufReader::new(stderr).lines().map_while(Result::ok) {
+                if !line.trim().is_empty() {
+                    *last_line.lock().unwrap() = line.trim().to_string();
+                }
             }
-            Ok(None) => std::thread::sleep(Duration::from_millis(500).min(timeout)),
-            Err(e) => return Err(e.to_string()),
+        });
+    }
+    let stderr = || {
+        std::thread::sleep(Duration::from_millis(100));
+        last_line.lock().unwrap().clone()
+    };
+
+    let start = Instant::now();
+    let mut code = None;
+    loop {
+        if code.is_none() {
+            match child.try_wait() {
+                Ok(Some(status)) => code = Some(status.code().unwrap_or(-1)),
+                Ok(None) => {}
+                Err(e) => return Err(e.to_string()),
+            }
+        }
+        // Pe Windows se așteaptă și procesele pornite de installer (un bootstrapper iese imediat).
+        #[cfg(windows)]
+        let others_running = job.as_ref().is_some_and(|j| j.active() > 0);
+        #[cfg(not(windows))]
+        let others_running = false;
+        if let (Some(code), false) = (code, others_running) {
+            return Ok((code, stderr()));
+        }
+        if start.elapsed() >= timeout {
+            #[cfg(windows)]
+            if let Some(job) = &job {
+                job.kill();
+            }
+            #[cfg(unix)]
+            unsafe {
+                libc::kill(-(child.id() as i32), libc::SIGKILL);
+            }
+            let _ = child.kill();
+            let _ = child.wait();
+            // Installerul a terminat, doar ce a pornit după el (de ex. programul) a rămas deschis.
+            if let Some(code) = code {
+                return Ok((code, stderr()));
+            }
+            return Err(format!("a depășit timpul ({} min)", timeout.as_secs().div_ceil(60)));
+        }
+        std::thread::sleep(Duration::from_millis(500).min(timeout));
+    }
+}
+
+#[cfg(windows)]
+mod job {
+    use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
+    use windows_sys::Win32::System::JobObjects::{
+        AssignProcessToJobObject, CreateJobObjectW, JOBOBJECT_BASIC_ACCOUNTING_INFORMATION,
+        JobObjectBasicAccountingInformation, QueryInformationJobObject, TerminateJobObject,
+    };
+
+    /// Un Job Object cu installerul și toate procesele pornite de el.
+    pub struct Job(HANDLE);
+
+    impl Job {
+        pub fn for_child(child: &std::process::Child) -> Option<Job> {
+            use std::os::windows::io::AsRawHandle;
+            unsafe {
+                let job = CreateJobObjectW(std::ptr::null(), std::ptr::null());
+                if job.is_null() {
+                    return None;
+                }
+                if AssignProcessToJobObject(job, child.as_raw_handle() as HANDLE) == 0 {
+                    CloseHandle(job);
+                    return None;
+                }
+                Some(Job(job))
+            }
+        }
+
+        pub fn active(&self) -> u32 {
+            let mut info: JOBOBJECT_BASIC_ACCOUNTING_INFORMATION = unsafe { std::mem::zeroed() };
+            let ok = unsafe {
+                QueryInformationJobObject(
+                    self.0,
+                    JobObjectBasicAccountingInformation,
+                    &mut info as *mut _ as *mut _,
+                    size_of::<JOBOBJECT_BASIC_ACCOUNTING_INFORMATION>() as u32,
+                    std::ptr::null_mut(),
+                )
+            };
+            if ok == 0 { 0 } else { info.ActiveProcesses }
+        }
+
+        pub fn kill(&self) {
+            unsafe { TerminateJobObject(self.0, 1) };
+        }
+    }
+
+    impl Drop for Job {
+        fn drop(&mut self) {
+            unsafe { CloseHandle(self.0) };
         }
     }
 }
@@ -151,6 +264,9 @@ pub fn desktop_entry(name: &str, target: &Path) -> String {
 
 #[cfg(unix)]
 fn execute_appimage(file: &Path, target: &Path, name: &str, version: &str, timeout: Duration) -> Outcome {
+    if detect::is_foreign(target) {
+        return Outcome::Failed(foreign_message(target));
+    }
     if let Err(e) = install_appimage(file, target, timeout) {
         return Outcome::Failed(e);
     }
@@ -190,8 +306,8 @@ fn install_appimage(file: &Path, target: &Path, timeout: Duration) -> Result<(),
         let mut command = Command::new(&copy);
         command.arg("--appimage-extract").current_dir(&work).stdout(std::process::Stdio::null());
         match wait_with_timeout(command, &copy, timeout)? {
-            0 => {}
-            code => return Err(format!("dezarhivarea AppImage a eșuat (cod {code})")),
+            (0, _) => {}
+            (code, _) => return Err(format!("dezarhivarea AppImage a eșuat (cod {code})")),
         }
         let staging = sibling(target, "nou");
         let _ = std::fs::remove_dir_all(&staging);
@@ -226,13 +342,38 @@ fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
     Ok(())
 }
 
+fn foreign_message(target: &Path) -> String {
+    format!("în {} există deja o altă instalare (de exemplu din .msi); dezinstalați-o întâi", target.display())
+}
+
+/// Cum ajunge un argument în linia de comandă de pe Windows. Argumentele scrise de profesor se
+/// dau exact cum le-ar scrie în cmd (msiexec, NSIS și Inno își citesc singure linia, nu după
+/// regulile MSVCRT); doar unul fără ghilimele care conține spații, ca o cale, primește ghilimele.
+#[cfg_attr(not(windows), allow(dead_code))]
+pub fn windows_arg(arg: &str) -> String {
+    let plain = !arg.contains('"') && !arg.starts_with("/D=");
+    if plain && (arg.is_empty() || arg.contains(char::is_whitespace)) {
+        // Un „\” de la sfârșit ar scăpa ghilimelele de închidere.
+        let tail = arg.len() - arg.trim_end_matches('\\').len();
+        format!("\"{arg}{}\"", "\\".repeat(tail))
+    } else {
+        arg.to_string()
+    }
+}
+
 pub fn execute(action: &Action, v: &Variant) -> Outcome {
     match action {
         Action::Run { exe, args } => match run_process(exe, args, Duration::from_secs(v.timeout_min * 60)) {
-            Ok(code) => classify(code, v),
+            Ok((code, stderr)) => match classify(code, v) {
+                Outcome::Failed(why) if !stderr.is_empty() => Outcome::Failed(format!("{why}: {stderr}")),
+                outcome => outcome,
+            },
             Err(e) => Outcome::Failed(e),
         },
         Action::Unzip { zip, target, shortcut_exe, name, desktop, version } => {
+            if detect::is_foreign(target) {
+                return Outcome::Failed(foreign_message(target));
+            }
             if let Err(e) = unzip_replace(zip, target) {
                 return Outcome::Failed(e);
             }
@@ -309,7 +450,7 @@ mod tests {
     #[test]
     fn run_process_exit_code() {
         let args = ["-c".to_string(), "exit 7".to_string()];
-        assert_eq!(run_process(Path::new("/bin/sh"), &args, Duration::from_secs(10)), Ok(7));
+        assert_eq!(run_process(Path::new("/bin/sh"), &args, Duration::from_secs(10)), Ok((7, String::new())));
     }
 
     #[cfg(unix)]
@@ -378,6 +519,62 @@ mod tests {
         std::fs::create_dir_all(target.parent().unwrap()).unwrap();
         let _ = unzip_replace(&zip, &target);
         assert!(!dir.path().join("t").join("afara.txt").exists());
+    }
+
+    #[test]
+    fn windows_args_verbatim_unless_plain_with_spaces() {
+        assert_eq!(windows_arg(r"F:\Sumatra PDF\setup.exe"), r#""F:\Sumatra PDF\setup.exe""#);
+        assert_eq!(windows_arg("/qn"), "/qn");
+        assert_eq!(windows_arg(r#"DESKTOPSHORTCUT="""#), r#"DESKTOPSHORTCUT="""#);
+        assert_eq!(windows_arg(r#"INSTALLDIR="C:\Program Files\X""#), r#"INSTALLDIR="C:\Program Files\X""#);
+        // NSIS recunoaște /D= doar fără ghilimele.
+        assert_eq!(windows_arg(r"/D=C:\Program Files\X"), r"/D=C:\Program Files\X");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn run_process_kills_grandchildren() {
+        let dir = tempfile::tempdir().unwrap();
+        let pidfile = dir.path().join("pid");
+        let script = format!("sleep 30 & echo $! > '{}'; wait", pidfile.display());
+        let err = run_process(Path::new("/bin/sh"), &["-c".into(), script], Duration::from_secs(1)).unwrap_err();
+        assert!(err.contains("timpul"));
+        let pid: i32 = std::fs::read_to_string(&pidfile).unwrap().trim().parse().unwrap();
+        std::thread::sleep(Duration::from_millis(300));
+        assert_eq!(unsafe { libc::kill(pid, 0) }, -1, "procesul-nepot {pid} trăiește încă");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn failure_shows_last_stderr_line() {
+        let action = Action::Run {
+            exe: "/bin/sh".into(),
+            args: vec!["-c".into(), "echo prima >&2; echo 'E: Could not get lock' >&2; exit 100".into()],
+        };
+        assert_eq!(execute(&action, &variant("")), Outcome::Failed("cod de ieșire 100: E: Could not get lock".into()));
+    }
+
+    #[test]
+    fn zip_refuses_foreign_install() {
+        let dir = tempfile::tempdir().unwrap();
+        let zip = dir.path().join("a.zip");
+        make_zip(&zip, &["Furnica.exe"]);
+        let target = dir.path().join("Furnica");
+        std::fs::create_dir(&target).unwrap();
+        std::fs::write(target.join("din-msi.txt"), b"").unwrap();
+        let action = Action::Unzip {
+            zip,
+            target: target.clone(),
+            shortcut_exe: "Furnica.exe".into(),
+            name: "Furnica".into(),
+            desktop: false,
+            version: "3.0.4".into(),
+        };
+        match execute(&action, &variant("")) {
+            Outcome::Failed(why) => assert!(why.contains("altă instalare"), "{why}"),
+            other => panic!("{other:?}"),
+        }
+        assert!(target.join("din-msi.txt").is_file());
     }
 
     #[test]

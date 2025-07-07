@@ -49,7 +49,14 @@ pub fn build_rows(entries: Vec<Entry>, sys: &SystemInfo, reg: &dyn Registry) -> 
                 }
                 Err(_) => (None, None, false),
             };
-            let status = select::status(&entry.program, sys, installed.as_deref());
+            let foreign = match (&entry.program, variant) {
+                (Ok(p), Some(i)) => detect::foreign_install(p, &p.variants[i]),
+                _ => None,
+            };
+            let status = match foreign {
+                Some(dir) => Status::Unsupported(format!("instalat altfel în {}; dezinstalați-l întâi", dir.display())),
+                None => select::status(&entry.program, sys, installed.as_deref()),
+            };
             let checked = status.checkable() && status.default_checked(default);
             Row { entry, status, checked, variant, progress: Progress::Pending }
         })
@@ -74,6 +81,15 @@ pub fn summary(rows: &[Row]) -> String {
         text += ", repornire necesară";
     }
     text
+}
+
+/// Rezultatul unui program: reușit → „la zi” și debifat, ca un al doilea click să nu-l reinstaleze.
+pub fn finish_row(row: &mut Row, outcome: Outcome) {
+    if let (Outcome::Ok | Outcome::OkReboot, Ok(p)) = (&outcome, &row.entry.program) {
+        row.status = Status::UpToDate { installed: p.version.clone() };
+        row.checked = false;
+    }
+    row.progress = Progress::Done(outcome);
 }
 
 enum State {
@@ -134,7 +150,7 @@ impl InstallerApp {
         while let Ok(msg) = rx.try_recv() {
             match msg {
                 Msg::Started(i) => self.rows[i].progress = Progress::Running,
-                Msg::Finished(i, o) => self.rows[i].progress = Progress::Done(o),
+                Msg::Finished(i, o) => finish_row(&mut self.rows[i], o),
                 Msg::AllDone => done = true,
             }
         }
@@ -286,6 +302,33 @@ mod tests {
         assert_eq!(summary(&done(&many)), "5 instalate, 1 eroare, repornire necesară");
         assert_eq!(summary(&done(&[Outcome::Ok, Outcome::Ok])), "2 instalate");
         assert_eq!(summary(&done(&[Outcome::Ok, fail(), fail()])), "1 instalat, 2 erori");
+    }
+
+    #[test]
+    fn finished_row_becomes_up_to_date() {
+        let mut rows = build_rows(vec![entry(true), entry(true)], &sys(), &NoRegistry);
+        finish_row(&mut rows[0], Outcome::Ok);
+        finish_row(&mut rows[1], Outcome::Failed("x".into()));
+        assert_eq!(rows[0].status, Status::UpToDate { installed: "1".into() });
+        assert!(!rows[0].checked);
+        assert_eq!(rows[0].progress, Progress::Done(Outcome::Ok));
+        assert_eq!(rows[1].status, Status::Missing);
+        assert!(rows[1].checked, "eroarea rămâne bifată, pentru o nouă încercare");
+    }
+
+    #[test]
+    fn build_rows_marks_foreign_install() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("p.exe"), b"").unwrap();
+        let program = toml::from_str(&format!(
+            "name = \"P\"\nversion = \"1\"\ncategory = \"C\"\n[[variant]]\nwindows = [\"10\"]\narch = \"x86\"\nkind = \"zip\"\nfile = \"f.zip\"\ntarget = '{}'\nshortcut = \"p.exe\"\n",
+            dir.path().display()
+        ))
+        .unwrap();
+        let rows = build_rows(vec![Entry { folder: "P".into(), program: Ok(program) }], &sys(), &NoRegistry);
+        assert!(!rows[0].checked);
+        assert!(!rows[0].status.checkable());
+        assert!(rows[0].status.label("1").contains("instalat altfel"), "{}", rows[0].status.label("1"));
     }
 
     #[test]

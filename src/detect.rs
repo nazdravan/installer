@@ -43,6 +43,21 @@ pub fn installed_version(p: &Program, v: &Variant, reg: &dyn Registry) -> Option
         .max_by(|a, b| version::compare(a, b))
 }
 
+/// Mapa unui program portabil care există deja, dar nu a fost pusă de instalator (de exemplu
+/// Furnica instalată din .msi în același `C:\Program Files\Furnica`). Nu se suprascrie.
+pub fn foreign_install(p: &Program, v: &Variant) -> Option<std::path::PathBuf> {
+    if !matches!(v.kind, Kind::Zip | Kind::AppImage) {
+        return None;
+    }
+    v.target_dir(&p.name).filter(|t| is_foreign(t))
+}
+
+/// Mapa există, nu e goală și nu are marcajul instalatorului.
+pub fn is_foreign(target: &std::path::Path) -> bool {
+    !target.join(MARKER).exists()
+        && std::fs::read_dir(target).is_ok_and(|mut entries| entries.next().is_some())
+}
+
 #[cfg(target_os = "linux")]
 pub struct Dpkg;
 
@@ -126,6 +141,23 @@ mod tests {
         let reg = FakeRegistry(vec![("furnica-data", "9"), ("furnica", "1:3.0.4")]);
         assert_eq!(installed_version(&p, &p.variants[0], &reg).as_deref(), Some("3.0.4"));
         assert_eq!(installed_version(&p, &p.variants[0], &FakeRegistry(vec![])), None);
+    }
+
+    #[test]
+    fn foreign_install_detected() {
+        let dir = tempfile::tempdir().unwrap();
+        let target = dir.path().join("Furnica");
+        let p = program("zip", target.to_str().unwrap());
+        let v = &p.variants[0];
+        assert_eq!(foreign_install(&p, v), None);
+        std::fs::create_dir(&target).unwrap();
+        assert_eq!(foreign_install(&p, v), None, "mapă goală");
+        std::fs::write(target.join("Furnica.exe"), b"").unwrap();
+        assert_eq!(foreign_install(&p, v), Some(target.clone()));
+        std::fs::write(target.join(MARKER), "3.0.4").unwrap();
+        assert_eq!(foreign_install(&p, v), None, "pusă de instalator");
+        let msi = program("msi", "");
+        assert_eq!(foreign_install(&msi, &msi.variants[0]), None);
     }
 
     #[test]
