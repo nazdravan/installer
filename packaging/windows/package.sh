@@ -106,6 +106,11 @@ for app in furnica cangurul; do
         rm "$toml.bak"
         echo "$Name $v: $(basename "$zip")"
     else
+        # În workflow-ul de release (ASSETS setat) un stick fără program nu se publică.
+        if [ -n "${ASSETS:-}" ]; then
+            echo "Lipsește $app în $ASSETS." >&2
+            exit 1
+        fi
         echo "ATENȚIE: lipsește arhiva $app-*-windows7-x86-portable.zip. Descărcați-o de pe" >&2
         echo "  https://github.com/nazdravan/$app/releases în $STICK/Windows/$Name/ și verificați program.toml." >&2
     fi

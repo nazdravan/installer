@@ -174,8 +174,8 @@ jobs:
     name: GitHub Release
     # Doar la push pe main, cu toate build-urile și testele reușite.
     if: >-
-      github.event_name == 'push' && needs.version.outputs.build == 'true' &&
-      !cancelled() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+      github.event_name == 'push' && needs.version.outputs.build == 'true' && !cancelled() &&
+      needs.test.result == 'success' && needs.windows.result == 'success' && needs.linux.result == 'success'
     needs: [version, test, windows, linux]
     runs-on: ubuntu-latest
     permissions:
