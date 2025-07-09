@@ -1,0 +1,48 @@
+[
+  {
+    "file": "site/assets/laborator.jpg",
+    "media": "image",
+    "ref": "commons:137984996",
+    "title": "Computer Lab Baraboo",
+    "creator": "JackFromWisconsin",
+    "creatorUrl": null,
+    "date": "2023-09-22",
+    "license": "CC0",
+    "licenseCode": "cc0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "creditRequired": false,
+    "page": "https://commons.wikimedia.org/wiki/File:Computer_Lab_Baraboo.jpg",
+    "via": "Wikimedia Commons",
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Computer_Lab_Baraboo.jpg/1920px-Computer_Lab_Baraboo.jpg",
+    "width": 1920,
+    "height": 1440,
+    "bytes": 696114,
+    "credit": "\"Computer Lab Baraboo\" by JackFromWisconsin, CC0, via Wikimedia Commons",
+    "notes": [],
+    "saved": "2026-10-27T20:31:14.960Z"
+  },
+  {
+    "file": "site/assets/laborator-2.jpg",
+    "media": "image",
+    "ref": "commons:145728226",
+    "title": "Diaz College Computer Laboratory",
+    "creator": "Rc ramz",
+    "creatorUrl": null,
+    "date": "2024-02-23",
+    "license": "CC BY-SA 4.0",
+    "licenseCode": "by-sa",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "creditRequired": true,
+    "page": "https://commons.wikimedia.org/wiki/File:Diaz_College_Computer_Laboratory.jpg",
+    "via": "Wikimedia Commons",
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Diaz_College_Computer_Laboratory.jpg/1920px-Diaz_College_Computer_Laboratory.jpg",
+    "width": 1920,
+    "height": 1964,
+    "bytes": 363212,
+    "credit": "\"Diaz College Computer Laboratory\" by Rc ramz, CC BY-SA 4.0, via Wikimedia Commons",
+    "notes": [
+      "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+    ],
+    "saved": "2026-10-27T20:31:15.904Z"
+  }
+]

@@ -1,0 +1,390 @@
+/* Instalator școală: pagina de prezentare. Tema „tehnic, întunecat”: grafit și chihlimbar. */
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("assets/inter-latin-ext.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --bg: #15171b;
+  --surface: #1d2026;
+  --surface-2: #262a31;
+  --surface-3: #30353e;
+  --ink: #eceef1;
+  --muted: #a9afb8;
+  --accent: #f2a93b;
+  --accent-ink: #1b1406;
+  --ok: #7bd88f;
+  --err: #ff7f70;
+
+  --t-xl: clamp(34px, 4.4vw, 68px);
+  --t-l: clamp(30px, 3vw, 46px);
+  --t-m: 20px;
+  --t-s: 17px;
+  --t-xs: 14px;
+
+  --margin: 32px;
+  --radius: 4px;
+  --gap-section: clamp(120px, 14vw, 200px);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 var(--t-s)/1.55 "Inter", system-ui, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+h1, h2, h3, p { margin: 0; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+code, pre { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+p code { font-size: .9em; color: var(--ink); background: var(--surface-2); padding: .1em .35em; border-radius: var(--radius); }
+
+/* Butoane: un singur fel, colțuri de 4px. */
+.button {
+  display: inline-flex; align-items: center; gap: .5em;
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 650; font-size: var(--t-s); text-decoration: none;
+  padding: 14px 22px; border-radius: var(--radius);
+  transition: transform .2s var(--ease), background-color .2s;
+}
+.button:hover { background: #ffbc57; transform: translateY(-1px); }
+.button:active { transform: translateY(1px); }
+.button.small { font-size: var(--t-xs); padding: 9px 14px; }
+.button.dark { background: var(--accent-ink); color: var(--accent); }
+.button.dark:hover { background: #2a2010; }
+.button.ghost { background: transparent; border: 2px solid var(--accent-ink); padding: 12px 20px; color: var(--accent-ink); }
+.button.ghost:hover { background: rgba(27, 20, 6, .1); }
+
+/* Bara de sus */
+.bar {
+  display: flex; align-items: center; gap: 32px;
+  padding: 20px var(--margin);
+  font-size: 15px;
+}
+.wordmark { font-weight: 750; text-decoration: none; letter-spacing: -.01em; }
+.bar nav { display: flex; gap: 28px; margin-left: auto; }
+.bar nav a { text-decoration: none; color: var(--muted); transition: color .2s; }
+.bar nav a:hover { color: var(--ink); }
+
+/* Antet: propoziția despicată de fereastra programului. */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  padding: clamp(40px, 6vw, 88px) var(--margin) 0;
+}
+/* Titlul ocupă tot rândul; fereastra stă în mijlocul lui, între cele două jumătăți. */
+.hero-title {
+  grid-area: 1 / 1;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: clamp(30px, 3.5vw, 58px); font-weight: 700; letter-spacing: -.035em; line-height: 1;
+}
+.hero-a, .hero-b { white-space: nowrap; }
+.hero-stage { grid-area: 1 / 1; justify-self: center; width: min(36vw, 580px); display: grid; gap: 14px; position: relative; }
+.hero-foot { grid-area: 2 / 1; }
+.hero-foot {
+  display: flex; align-items: end; justify-content: space-between; gap: 32px;
+  margin-top: 56px;
+}
+.lead { font-size: var(--t-m); line-height: 1.5; max-width: 34em; }
+
+/* Fragmentele programului (data-ui): aici convențiile interfeței, nu ale paginii. */
+.app {
+  background: var(--surface);
+  border: 1px solid #343944;
+  border-radius: 8px;
+  font-size: var(--t-xs);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45); /* taste-skill-ignore: fereastra programului plutește (data-ui) */
+}
+.app-titlebar {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; background: var(--surface-2);
+  font-weight: 650;
+}
+.app-sys { color: var(--muted); font-weight: 400; white-space: nowrap; }
+.app-list { padding: 8px 16px 12px; min-height: 220px; }
+.app-cat { margin: 10px 0 2px; color: var(--muted); font-size: 13px; }
+.app-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; margin: 0 -8px; border-radius: 4px;
+  cursor: pointer; transition: background-color .15s;
+}
+.app-row:hover { background: var(--surface-2); }
+.app-row b { font-weight: 600; white-space: nowrap; }
+.app-row .st { color: var(--muted); }
+.app-row .res { margin-left: auto; font-weight: 700; white-space: nowrap; }
+.app-row .res.ok { color: var(--ok); }
+.app-row .res.err { color: var(--err); }
+.app-row.off { cursor: default; }
+.app-row.off b { color: var(--muted); }
+.app-row.bad .st { color: var(--err); }
+.app-row input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.spin {
+  display: inline-block; width: 13px; height: 13px; vertical-align: -2px;
+  border: 2px solid var(--surface-3); border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.app-foot {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; background: var(--surface-2);
+}
+.app-summary { margin-left: auto; color: var(--muted); }
+.app-btn {
+  font: inherit; color: var(--ink); background: var(--surface-3);
+  border: 1px solid #424854; border-radius: 4px; padding: 6px 12px; cursor: pointer;
+  transition: background-color .15s, transform .1s;
+}
+.app-btn:hover { background: #3a404b; }
+.app-btn:active { transform: scale(.97); }
+.app-btn[disabled] { opacity: .45; cursor: default; }
+.app-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 650; }
+.app-primary:hover { background: #ffbc57; }
+
+/* Bifa și crucea programului, desenate (fonturile paginii nu le au pe toate). */
+.ic {
+  display: inline-block; width: 1em; height: 1em; vertical-align: -.15em;
+  background: currentColor;
+  -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat;
+  --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 8.5l4 4 8-9' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.ic.ok { color: var(--ok); }
+.ic.err { color: var(--err); --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 3.5l9 9M12.5 3.5l-9 9' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+
+.journal {
+  margin: 0; padding: 14px 16px; min-height: 7.4em;
+  background: #0f1013; border-radius: var(--radius);
+  font-size: 13px; line-height: 1.6; color: var(--muted);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.journal .ok { color: var(--ok); }
+.journal .err { color: var(--err); }
+
+/* Cum funcționează: o singură coloană de citit. */
+.how { margin-top: var(--gap-section); padding: 0 var(--margin); }
+.how .col { max-width: 600px; margin-left: 30%; }
+.how h2, .try h2, .sys-head h2, .cta h2 { font-size: var(--t-l); font-weight: 700; letter-spacing: -.025em; line-height: 1.05; }
+.how h2 { margin-bottom: 48px; }
+.stage + .stage { margin-top: 72px; }
+.stage > p { font-size: 18px; line-height: 1.6; color: var(--muted); }
+.stage > p b { color: var(--ink); font-weight: 650; }
+.stage > :last-child { margin-top: 20px; }
+.tree {
+  background: var(--surface); border-radius: var(--radius); padding: 16px 18px;
+  font-size: var(--t-xs); line-height: 1.9;
+}
+.tree .in { padding-left: 20px; }
+.tree .in2 { padding-left: 40px; }
+.tree span { color: var(--muted); }
+.photo { margin: 0; }
+.photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius); }
+.photo figcaption { margin-top: 10px; font-size: var(--t-xs); color: var(--muted); }
+.rowpiece {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border-radius: var(--radius); padding: 14px 18px; font-size: 15px;
+}
+.rowpiece .st { color: var(--muted); }
+.box { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 3px; background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 800; }
+.journal.static { min-height: 0; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair figure { margin: 0; }
+.pair img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: left top; border-radius: var(--radius); }
+.pair figcaption { margin-top: 8px; font-size: var(--t-xs); color: var(--muted); }
+
+/* Încearcă: panoul cu demonstrația și controalele. */
+.try { margin-top: var(--gap-section); padding: 0 var(--margin); }
+.try-head { max-width: 1040px; margin: 0 auto 28px; display: grid; gap: 12px; }
+.try-head p { color: var(--muted); max-width: 36em; }
+.panel {
+  position: relative;
+  max-width: 1040px; margin: 0 auto;
+  display: grid; grid-template-columns: 62fr 38fr;
+  background: var(--surface); border-radius: 12px; overflow: hidden;
+}
+.panel-demo { padding: 40px 40px 72px; background: #23262d; }
+.panel-demo .app { box-shadow: none; }
+.panel-controls { padding: 28px 28px 72px; display: grid; align-content: start; gap: 4px; }
+.ctl {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 48px; margin: 0; padding: 0; border: 0;
+  font-size: 15px;
+}
+.ctl legend { float: left; padding: 0; }
+fieldset.ctl { display: flex; }
+fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-items: center; }
+.ctl select {
+  font: inherit; font-size: var(--t-xs); color: var(--ink); background: var(--surface-2);
+  border: 1px solid #3d424c; border-radius: 4px; padding: 6px 8px; min-width: 9em; /* taste-skill-ignore: control al programului (data-ui) */
+}
+.ctl input { accent-color: var(--accent); width: 18px; height: 18px; }
+.panel-link { position: absolute; left: 40px; bottom: 26px; font-size: 15px; color: var(--accent); }
+.try-note { max-width: 1040px; margin: 18px auto 0; font-size: var(--t-xs); color: var(--muted); }
+
+/* Pentru administratori: lista de garanții ca un meniu de comenzi mărit. */
+.guarantees { margin-top: var(--gap-section); padding: 0 var(--margin); }
+.search { display: block; }
+.search input {
+  width: 100%; font: inherit; font-size: clamp(24px, 2.6vw, 40px); font-weight: 500; letter-spacing: -.02em;
+  color: var(--ink); background: var(--surface); border: 0; border-radius: var(--radius);
+  padding: .45em .6em;
+}
+.search input::placeholder { color: var(--muted); }
+.glist { list-style: none; margin: 18px 0 0; padding: 0; }
+.glist li { padding: 6px 12px; border-radius: var(--radius); cursor: pointer; transition: background-color .2s, color .2s; }
+.g-name { display: block; font-size: var(--t-xl); font-weight: 700; letter-spacing: -.035em; line-height: 1.1; }
+.g-text { display: none; max-width: 44em; padding: 8px 0 12px; font-size: var(--t-s); line-height: 1.55; }
+.glist li:not(.sel):hover { background: var(--surface); }
+.glist li.sel { background: var(--accent); color: var(--accent-ink); }
+.glist li.sel .g-text { display: block; }
+.g-empty { margin-top: 18px; color: var(--muted); }
+
+/* Sisteme: file și benzi. */
+.systems { margin-top: var(--gap-section); padding: 0 var(--margin); }
+.sys-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+.sys-head .soft { color: var(--muted); display: block; }
+.sys-body { display: grid; grid-template-columns: 170px 1fr; gap: 40px; margin-top: 56px; }
+.tabs { display: grid; gap: 6px; align-content: start; }
+.tabs button {
+  font: inherit; text-align: left; color: var(--ink); background: var(--surface);
+  border: 0; border-radius: var(--radius); padding: 12px 16px; height: 68px; cursor: pointer;
+  display: grid; transition: background-color .2s;
+}
+.tabs button span { font-size: 13px; color: var(--muted); }
+.tabs button:hover { background: var(--surface-2); }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tabs button[aria-selected="true"] span { color: #4b5058; }
+.bands { display: grid; gap: 4px; }
+.band {
+  display: grid; grid-template-columns: 22% 1fr auto; align-items: center; gap: 20px;
+  min-height: 76px; padding: 12px 20px; border-radius: var(--radius);
+  background: var(--surface);
+}
+.band:nth-child(even) { background: var(--surface-2); }
+.b-k { font-size: var(--t-m); font-weight: 700; }
+.b-t { font-size: 18px; font-weight: 550; display: grid; }
+.b-t small { font-size: var(--t-xs); font-weight: 400; color: var(--muted); }
+.b-r { font-size: var(--t-xs); color: var(--muted); }
+.toml { display: grid; grid-template-columns: 170px 1fr; gap: 40px; margin-top: 40px; }
+.toml p { grid-column: 2; color: var(--muted); }
+.toml pre {
+  grid-column: 2; margin: 0; padding: 20px 24px; background: #0f1013; border-radius: var(--radius);
+  font-size: 14px; line-height: 1.65; color: var(--ink); overflow-x: auto;
+}
+
+/* Descărcare: rândul de plăci. */
+.cta-wrap { margin-top: var(--gap-section); overflow-x: clip; }
+.cta {
+  display: grid; grid-template-columns: 1fr 4fr 1fr; gap: 12px;
+  margin-left: calc(-1 * 8vw); margin-right: calc(-1 * 8vw);
+}
+.tile { height: 380px; border-radius: var(--radius); overflow: hidden; }
+.tile.side img { width: 100%; height: 100%; object-fit: cover; }
+.tile.flat { background: var(--surface-2); }
+.tile.main {
+  background: var(--accent); color: var(--accent-ink);
+  padding: 44px; display: flex; flex-direction: column; justify-content: center; gap: 14px;
+}
+.tile.main p { font-size: var(--t-s); max-width: 34em; }
+.dl { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.dl-meta { font-size: var(--t-xs) !important; }
+
+/* Subsolul: o singură linie. */
+.foot {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: 16px 24px;
+  padding: 30vh var(--margin) 30px; font-size: 15px;
+}
+.f-what { color: var(--muted); }
+.f-links { display: flex; gap: 24px; }
+.f-year { justify-self: end; color: var(--muted); }
+.credits { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+.credits a { color: var(--ink); }
+
+/* Intrări la derulare: doar dacă scriptul rulează. */
+.js .reveal > * { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.js .reveal > :nth-child(2) { transition-delay: .08s; }
+.js .reveal.in > * { opacity: 1; transform: none; }
+.js .hero-stage, .js .hero-foot { animation: rise .7s var(--ease) both; }
+.js .hero-stage { animation-delay: .08s; }
+.js .hero-foot { animation-delay: .16s; }
+@keyframes rise { from { opacity: 0; transform: translateY(20px); } }
+.photo img { transition: transform 1.2s var(--ease); }
+.photo:hover img { transform: scale(1.02); }
+.tile.side img { animation: drift 24s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: scale(1.08) translateX(-2%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .js .reveal > * { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* Tabletă */
+@media (max-width: 1080px) {
+  .hero { row-gap: 24px; }
+  .hero-title { grid-area: 1 / 1; display: grid; font-size: clamp(36px, 7vw, 56px); gap: .1em; }
+  .hero-b { justify-self: end; }
+  .hero-stage { grid-area: 2 / 1; width: 100%; max-width: 640px; }
+  .hero-foot { grid-area: 3 / 1; }
+  .how .col { margin-left: auto; margin-right: auto; }
+  .panel { grid-template-columns: 1fr; }
+  .cta { margin-left: 0; margin-right: 0; grid-template-columns: 1fr 1fr; }
+  .cta-wrap { padding: 0 var(--margin); }
+  .tile.main { grid-column: 1 / -1; order: -1; }
+  .tile.side { height: 160px; }
+}
+
+/* Telefon */
+@media (max-width: 640px) {
+  :root { --margin: 16px; --gap-section: 96px; }
+  .bar { gap: 16px; padding: 16px var(--margin); }
+  .bar nav { display: none; }
+  .bar .button { margin-left: auto; }
+  .hero-title { font-size: 9.5vw; }
+  .hero-foot { flex-direction: column; align-items: start; margin-top: 8px; }
+  .lead { font-size: 17px; }
+  .app-sys { display: none; }
+  .app-row { flex-wrap: wrap; row-gap: 0; }
+  .app-row .st { flex-basis: 100%; padding-left: 26px; }
+  .app-row .res { position: absolute; right: 24px; }
+  .app-list { position: relative; }
+  .stage > p { font-size: 17px; }
+  .tree span { display: block; padding-left: 20px; }
+  .panel-demo { padding: 16px 16px 24px; }
+  .panel-controls { padding: 16px 16px 64px; }
+  .ctl { min-height: 52px; }
+  .panel-link { left: 16px; }
+  .search input { font-size: 20px; height: 56px; }
+  .g-name { font-size: 8vw; }
+  .sys-head { flex-direction: column; align-items: start; }
+  .sys-body, .toml { grid-template-columns: 1fr; gap: 16px; }
+  .tabs { grid-template-columns: 1fr 1fr; position: sticky; top: 0; z-index: 1; background: var(--bg); padding: 6px 0; }
+  .band { grid-template-columns: 1fr; gap: 4px; padding: 16px; }
+  .toml p, .toml pre { grid-column: 1; }
+  .tile.main { padding: 28px 20px; height: auto; min-height: 300px; }
+  .dl .button { width: 100%; justify-content: center; }
+  .foot { grid-template-columns: 1fr; padding-top: 20vh; }
+  .f-links { flex-wrap: wrap; gap: 8px 20px; }
+  .f-year { justify-self: start; }
+}
