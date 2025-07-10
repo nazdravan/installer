@@ -8,7 +8,7 @@
 <meta property="og:title" content="Instalator școală">
 <meta property="og:description" content="Un stick. Tot laboratorul. Instalare fără ferestre pe Windows și Linux.">
 <meta property="og:image" content="assets/laborator.jpg">
-<link rel="preload" href="assets/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
 </head>
@@ -28,7 +28,15 @@
 <main>
 
 <section class="hero" aria-labelledby="titlu">
-  <h1 id="titlu" class="hero-title"><span class="hero-a">Un stick.</span> <span class="hero-b">Tot laboratorul.</span></h1>
+  <div class="hero-copy">
+    <h1 id="titlu" class="hero-title">Un stick.<br>Tot laboratorul.</h1>
+    <p class="lead">Programul pornește de pe stick, arată programele cu bife și le instalează pe rând, fără ferestre și fără „Next”, pe Windows și pe Linux.</p>
+    <div class="hero-actions">
+      <a class="button" href="#descarca">⬇ Windows 8–11</a>
+      <a class="button ghost" href="#descarca">⬇ Linux</a>
+    </div>
+    <pre class="cmd"><code><span class="prompt">$</span> sh /media/stick/instalator.sh</code></pre>
+  </div>
 
   <div class="hero-stage">
     <div class="app" data-ui id="hero-app" aria-label="Fereastra Instalatorului, demonstrație">
@@ -54,10 +62,6 @@
 09:14:02 Windows 10 · 64 biți · Administrator</code></pre>
   </div>
 
-  <div class="hero-foot">
-    <p class="lead">Programul pornește de pe stick, arată programele cu bife și le instalează pe rând, fără ferestre și fără „Next”, pe Windows și pe Linux.</p>
-    <a class="button" href="#descarca">Descarcă gratuit</a>
-  </div>
 </section>
 
 <section class="how" id="cum" aria-labelledby="cum-t">

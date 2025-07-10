@@ -1,31 +1,32 @@
-/* Instalator școală: pagina de prezentare. Tema „tehnic, întunecat”: grafit și chihlimbar. */
+/* Instalator școală: pagina de prezentare. Tema G: negru și alb, monocrom, grilă fină în antet. */
 
 @font-face {
-  font-family: "Inter";
-  src: url("assets/inter-latin.woff2") format("woff2");
+  font-family: "Geist";
+  src: url("assets/geist-latin.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Inter";
-  src: url("assets/inter-latin-ext.woff2") format("woff2");
+  font-family: "Geist";
+  src: url("assets/geist-latin-ext.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 :root {
-  --bg: #15171b;
-  --surface: #1d2026;
-  --surface-2: #262a31;
-  --surface-3: #30353e;
-  --ink: #eceef1;
-  --muted: #a9afb8;
-  --accent: #f2a93b;
-  --accent-ink: #1b1406;
-  --ok: #7bd88f;
-  --err: #ff7f70;
+  --bg: #000;
+  --surface: #0a0a0a;
+  --surface-2: #111;
+  --surface-3: #1c1c1c;
+  --line: #262626;
+  --ink: #ededed;
+  --muted: #a1a1a1;
+  --accent: #ededed;
+  --accent-ink: #000;
+  --ok: #4ade80;
+  --err: #f87171;
 
   --t-xl: clamp(34px, 4.4vw, 68px);
   --t-l: clamp(30px, 3vw, 46px);
@@ -46,8 +47,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 400 var(--t-s)/1.55 "Inter", system-ui, sans-serif;
-  font-feature-settings: "cv11", "ss01";
+  font: 400 var(--t-s)/1.55 "Geist", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 img { display: block; max-width: 100%; height: auto; }
@@ -68,13 +68,15 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
   padding: 14px 22px; border-radius: var(--radius);
   transition: transform .2s var(--ease), background-color .2s;
 }
-.button:hover { background: #ffbc57; transform: translateY(-1px); }
+.button:hover { background: #fff; transform: translateY(-1px); }
 .button:active { transform: translateY(1px); }
 .button.small { font-size: var(--t-xs); padding: 9px 14px; }
-.button.dark { background: var(--accent-ink); color: var(--accent); }
-.button.dark:hover { background: #2a2010; }
-.button.ghost { background: transparent; border: 2px solid var(--accent-ink); padding: 12px 20px; color: var(--accent-ink); }
-.button.ghost:hover { background: rgba(27, 20, 6, .1); }
+.button.dark { background: var(--accent-ink); color: var(--ink); }
+.button.dark:hover { background: #1a1a1a; }
+.button.ghost { background: transparent; border: 1px solid #333; padding: 13px 21px; color: var(--ink); }
+.button.ghost:hover { background: var(--surface-2); }
+.tile.main .button.ghost { border-color: var(--accent-ink); color: var(--accent-ink); }
+.tile.main .button.ghost:hover { background: rgba(0, 0, 0, .06); }
 
 /* Bara de sus */
 .bar {
@@ -87,36 +89,44 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
 .bar nav a { text-decoration: none; color: var(--muted); transition: color .2s; }
 .bar nav a:hover { color: var(--ink); }
 
-/* Antet: propoziția despicată de fereastra programului. */
+/* Antet: centrat, pe o grilă fină care se stinge spre margini. */
 .hero {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  padding: clamp(40px, 6vw, 88px) var(--margin) 0;
+  position: relative;
+  display: grid; justify-items: center; gap: 56px;
+  padding: clamp(56px, 8vw, 120px) var(--margin) 0;
+  text-align: center;
+  isolation: isolate;
 }
-/* Titlul ocupă tot rândul; fereastra stă în mijlocul lui, între cele două jumătăți. */
+.hero::before {
+  content: ""; position: absolute; inset: 0 0 30% 0; z-index: -1;
+  background-image: linear-gradient(#161616 1px, transparent 1px), linear-gradient(90deg, #161616 1px, transparent 1px);
+  background-size: 48px 48px; background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 20%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 20%, #000 30%, transparent 75%);
+}
+.hero-copy { display: grid; justify-items: center; gap: 22px; max-width: 900px; }
 .hero-title {
-  grid-area: 1 / 1;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: clamp(30px, 3.5vw, 58px); font-weight: 700; letter-spacing: -.035em; line-height: 1;
+  font-size: clamp(44px, 6.6vw, 104px); font-weight: 700; letter-spacing: -.055em; line-height: .98;
+  color: #fff;
 }
-.hero-a, .hero-b { white-space: nowrap; }
-.hero-stage { grid-area: 1 / 1; justify-self: center; width: min(36vw, 580px); display: grid; gap: 14px; position: relative; }
-.hero-foot { grid-area: 2 / 1; }
-.hero-foot {
-  display: flex; align-items: end; justify-content: space-between; gap: 32px;
-  margin-top: 56px;
+.lead { font-size: var(--t-m); line-height: 1.5; max-width: 34em; color: var(--muted); }
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 6px; }
+.cmd {
+  margin: 4px 0 0; padding: 12px 18px; text-align: left;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  font-size: 14px; color: var(--muted);
 }
-.lead { font-size: var(--t-m); line-height: 1.5; max-width: 34em; }
+.cmd .prompt { color: #555; margin-right: .6em; user-select: none; }
+.hero-stage { width: min(680px, 100%); display: grid; gap: 12px; text-align: left; }
 
 /* Fragmentele programului (data-ui): aici convențiile interfeței, nu ale paginii. */
 .app {
   background: var(--surface);
-  border: 1px solid #343944;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   font-size: var(--t-xs);
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .45); /* taste-skill-ignore: fereastra programului plutește (data-ui) */
+  box-shadow: 0 0 0 1px #000, 0 30px 80px rgba(255, 255, 255, .06); /* taste-skill-ignore: fereastra programului plutește (data-ui) */
 }
 .app-titlebar {
   display: flex; justify-content: space-between; gap: 12px;
@@ -154,14 +164,14 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
 .app-summary { margin-left: auto; color: var(--muted); }
 .app-btn {
   font: inherit; color: var(--ink); background: var(--surface-3);
-  border: 1px solid #424854; border-radius: 4px; padding: 6px 12px; cursor: pointer;
+  border: 1px solid #333; border-radius: 6px; padding: 6px 12px; cursor: pointer;
   transition: background-color .15s, transform .1s;
 }
-.app-btn:hover { background: #3a404b; }
+.app-btn:hover { background: #262626; }
 .app-btn:active { transform: scale(.97); }
 .app-btn[disabled] { opacity: .45; cursor: default; }
 .app-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 650; }
-.app-primary:hover { background: #ffbc57; }
+.app-primary:hover { background: #fff; }
 
 /* Bifa și crucea programului, desenate (fonturile paginii nu le au pe toate). */
 .ic {
@@ -175,7 +185,7 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
 
 .journal {
   margin: 0; padding: 14px 16px; min-height: 7.4em;
-  background: #0f1013; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
   font-size: 13px; line-height: 1.6; color: var(--muted);
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
@@ -184,7 +194,7 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
 
 /* Cum funcționează: o singură coloană de citit. */
 .how { margin-top: var(--gap-section); padding: 0 var(--margin); }
-.how .col { max-width: 600px; margin-left: 30%; }
+.how .col { max-width: 640px; margin: 0 auto; }
 .how h2, .try h2, .sys-head h2, .cta h2 { font-size: var(--t-l); font-weight: 700; letter-spacing: -.025em; line-height: 1.05; }
 .how h2 { margin-bottom: 48px; }
 .stage + .stage { margin-top: 72px; }
@@ -199,7 +209,7 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
 .tree .in2 { padding-left: 40px; }
 .tree span { color: var(--muted); }
 .photo { margin: 0; }
-.photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius); }
+.photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; filter: grayscale(1) contrast(1.05); }
 .photo figcaption { margin-top: 10px; font-size: var(--t-xs); color: var(--muted); }
 .rowpiece {
   display: flex; align-items: center; gap: 12px;
@@ -221,9 +231,9 @@ p code { font-size: .9em; color: var(--ink); background: var(--surface-2); paddi
   position: relative;
   max-width: 1040px; margin: 0 auto;
   display: grid; grid-template-columns: 62fr 38fr;
-  background: var(--surface); border-radius: 12px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
 }
-.panel-demo { padding: 40px 40px 72px; background: #23262d; }
+.panel-demo { padding: 40px 40px 72px; background: var(--surface-2); }
 .panel-demo .app { box-shadow: none; }
 .panel-controls { padding: 28px 28px 72px; display: grid; align-content: start; gap: 4px; }
 .ctl {
@@ -239,7 +249,7 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
   border: 1px solid #3d424c; border-radius: 4px; padding: 6px 8px; min-width: 9em; /* taste-skill-ignore: control al programului (data-ui) */
 }
 .ctl input { accent-color: var(--accent); width: 18px; height: 18px; }
-.panel-link { position: absolute; left: 40px; bottom: 26px; font-size: 15px; color: var(--accent); }
+.panel-link { position: absolute; left: 40px; bottom: 26px; font-size: 15px; color: var(--ink); }
 .try-note { max-width: 1040px; margin: 18px auto 0; font-size: var(--t-xs); color: var(--muted); }
 
 /* Pentru administratori: lista de garanții ca un meniu de comenzi mărit. */
@@ -274,7 +284,7 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
 .tabs button span { font-size: 13px; color: var(--muted); }
 .tabs button:hover { background: var(--surface-2); }
 .tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
-.tabs button[aria-selected="true"] span { color: #4b5058; }
+.tabs button[aria-selected="true"] span { color: #555; }
 .bands { display: grid; gap: 4px; }
 .band {
   display: grid; grid-template-columns: 22% 1fr auto; align-items: center; gap: 20px;
@@ -282,6 +292,7 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
   background: var(--surface);
 }
 .band:nth-child(even) { background: var(--surface-2); }
+.band { border: 1px solid var(--line); }
 .b-k { font-size: var(--t-m); font-weight: 700; }
 .b-t { font-size: 18px; font-weight: 550; display: grid; }
 .b-t small { font-size: var(--t-xs); font-weight: 400; color: var(--muted); }
@@ -289,7 +300,7 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
 .toml { display: grid; grid-template-columns: 170px 1fr; gap: 40px; margin-top: 40px; }
 .toml p { grid-column: 2; color: var(--muted); }
 .toml pre {
-  grid-column: 2; margin: 0; padding: 20px 24px; background: #0f1013; border-radius: var(--radius);
+  grid-column: 2; margin: 0; padding: 20px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
   font-size: 14px; line-height: 1.65; color: var(--ink); overflow-x: auto;
 }
 
@@ -301,7 +312,7 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
 }
 .tile { height: 380px; border-radius: var(--radius); overflow: hidden; }
 .tile.side img { width: 100%; height: 100%; object-fit: cover; }
-.tile.flat { background: var(--surface-2); }
+.tile.flat { background: var(--surface-2); border: 1px solid var(--line); }
 .tile.main {
   background: var(--accent); color: var(--accent-ink);
   padding: 44px; display: flex; flex-direction: column; justify-content: center; gap: 14px;
@@ -325,13 +336,12 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
 .js .reveal > * { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .js .reveal > :nth-child(2) { transition-delay: .08s; }
 .js .reveal.in > * { opacity: 1; transform: none; }
-.js .hero-stage, .js .hero-foot { animation: rise .7s var(--ease) both; }
+.js .hero-copy, .js .hero-stage { animation: rise .7s var(--ease) both; }
 .js .hero-stage { animation-delay: .08s; }
-.js .hero-foot { animation-delay: .16s; }
 @keyframes rise { from { opacity: 0; transform: translateY(20px); } }
 .photo img { transition: transform 1.2s var(--ease); }
 .photo:hover img { transform: scale(1.02); }
-.tile.side img { animation: drift 24s ease-in-out infinite alternate; }
+.tile.side img { animation: drift 24s ease-in-out infinite alternate; filter: grayscale(1) contrast(1.05); }
 @keyframes drift { to { transform: scale(1.08) translateX(-2%); } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -342,11 +352,6 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
 
 /* Tabletă */
 @media (max-width: 1080px) {
-  .hero { row-gap: 24px; }
-  .hero-title { grid-area: 1 / 1; display: grid; font-size: clamp(36px, 7vw, 56px); gap: .1em; }
-  .hero-b { justify-self: end; }
-  .hero-stage { grid-area: 2 / 1; width: 100%; max-width: 640px; }
-  .hero-foot { grid-area: 3 / 1; }
   .how .col { margin-left: auto; margin-right: auto; }
   .panel { grid-template-columns: 1fr; }
   .cta { margin-left: 0; margin-right: 0; grid-template-columns: 1fr 1fr; }
@@ -361,9 +366,11 @@ fieldset.ctl label { margin-left: 14px; display: inline-flex; gap: 6px; align-it
   .bar { gap: 16px; padding: 16px var(--margin); }
   .bar nav { display: none; }
   .bar .button { margin-left: auto; }
-  .hero-title { font-size: 9.5vw; }
-  .hero-foot { flex-direction: column; align-items: start; margin-top: 8px; }
+  .hero { gap: 40px; }
+  .hero-title { font-size: 12vw; }
   .lead { font-size: 17px; }
+  .hero-actions .button { flex: 1 1 100%; justify-content: center; }
+  .cmd { font-size: 12.5px; max-width: 100%; overflow-x: auto; }
   .app-sys { display: none; }
   .app-row { flex-wrap: wrap; row-gap: 0; }
   .app-row .st { flex-basis: 100%; padding-left: 26px; }
