@@ -8,39 +8,42 @@
 <meta property="og:title" content="Instalator școală">
 <meta property="og:description" content="Un stick. Tot laboratorul. Instalare fără ferestre pe Windows și Linux.">
 <meta property="og:image" content="assets/laborator.jpg">
-<link rel="preload" href="assets/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
 </head>
 <body>
 
-<header class="bar">
-  <a class="wordmark" href="#">Instalator școală</a>
-  <nav aria-label="Secțiuni">
-    <a href="#cum">Cum funcționează</a>
-    <a href="#incearca">Încearcă</a>
-    <a href="#garantii">Pentru administratori</a>
-    <a href="#sisteme">Sisteme</a>
-  </nav>
-  <a class="button small" href="#descarca">Descarcă</a>
+<header class="sticky top-0 z-20 bg-ground/95">
+  <div class="container-page flex h-16 items-center gap-8">
+    <a class="font-bold tracking-tight" href="#">Instalator școală</a>
+    <nav class="ml-auto hidden gap-7 text-[15px] text-muted md:flex" aria-label="Secțiuni">
+      <a class="transition-colors hover:text-ink" href="#cum">Cum funcționează</a>
+      <a class="transition-colors hover:text-ink" href="#incearca">Încearcă</a>
+      <a class="transition-colors hover:text-ink" href="#garantii">Pentru administratori</a>
+      <a class="transition-colors hover:text-ink" href="#sisteme">Sisteme</a>
+    </nav>
+    <a class="btn ml-auto px-4 py-2 text-sm md:ml-0" href="#descarca">Descarcă</a>
+  </div>
 </header>
 
 <main>
 
-<section class="hero" aria-labelledby="titlu">
-  <div class="hero-copy">
-    <h1 id="titlu" class="hero-title">Un stick.<br>Tot laboratorul.</h1>
-    <p class="lead">Programul pornește de pe stick, arată programele cu bife și le instalează pe rând, fără ferestre și fără „Next”, pe Windows și pe Linux.</p>
-    <div class="hero-actions">
-      <a class="button" href="#descarca">⬇ Windows 8–11</a>
-      <a class="button ghost" href="#descarca">⬇ Linux</a>
+<!-- Antet: textul la stânga, fereastra programului lucrând la dreapta. -->
+<section class="container-page grid items-center gap-12 pt-14 pb-24 lg:grid-cols-12 lg:gap-10 lg:pt-24 lg:pb-32" aria-labelledby="titlu">
+  <div class="animate-rise lg:col-span-6">
+    <h1 id="titlu" class="text-5xl leading-[1.02] font-bold tracking-tight text-white sm:text-6xl xl:text-[4.25rem]">Un stick.<br>Tot laboratorul.</h1>
+    <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">Programul pornește de pe stick, arată programele cu bife și le instalează pe rând, fără ferestre și fără „Next”. Pe Windows 8–11 și pe Linux.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="btn" href="#descarca">Descarcă pentru Windows</a>
+      <a class="btn-outline" href="#descarca">Pentru Linux</a>
     </div>
-    <pre class="cmd"><code><span class="prompt">$</span> sh /media/stick/instalator.sh</code></pre>
+    <p class="mt-6 text-sm text-muted">Gratuit și liber (GPL-3.0) · fără internet · Furnica și Cangurul incluse</p>
   </div>
 
-  <div class="hero-stage">
+  <div class="grid animate-rise gap-3 [animation-delay:.1s] lg:col-span-6">
     <div class="app" data-ui id="hero-app" aria-label="Fereastra Instalatorului, demonstrație">
-      <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="reușit"></i></span></div>
+      <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="da"></i></span></div>
       <div class="app-list">
         <div class="app-cat">Educațional</div>
         <label class="app-row"><input type="checkbox" checked data-name="Furnica"> <b>Furnica 3.0.5</b> <span class="st">nu e instalat</span> <span class="res"></span></label>
@@ -61,153 +64,173 @@
     <pre class="journal" id="hero-journal" aria-label="Jurnalul de pe stick"><code>jurnal\LAB-PC07-20261027-091402.txt
 09:14:02 Windows 10 · 64 biți · Administrator</code></pre>
   </div>
-
 </section>
 
-<section class="how" id="cum" aria-labelledby="cum-t">
-  <div class="col">
-    <h2 id="cum-t">De la stick la ultimul calculator</h2>
-
-    <div class="stage reveal">
-      <p><b>Acasă,</b> dezarhivezi zip-ul pe stick. Lângă program stă mapa <code>Windows</code> (sau <code>Linux</code>), cu câte o mapă pentru fiecare program: installerul lui și un fișier scurt, <code>program.toml</code>, care spune ce versiune este și cum se instalează fără ferestre.</p>
-      <div class="tree" data-ui>
-        <div><b>E:\</b></div>
-        <div class="in">Instalator.exe</div>
-        <div class="in"><b>Windows\</b></div>
-        <div class="in2"><b>Furnica\</b> <span>program.toml, furnica-3.0.5-windows7-x86-portable.zip</span></div>
-        <div class="in2"><b>Cangurul\</b> <span>program.toml, cangurul-3.0.6-windows7-x86-portable.zip</span></div>
-        <div class="in2"><b>Audacity\</b> <span>program.toml, audacity-win-3.6.4-64bit.exe</span></div>
-        <div class="in"><b>jurnal\</b></div>
+<!-- Cum funcționează: titlul în stânga, pașii în dreapta. -->
+<section id="cum" class="bg-panel/40 py-24 lg:py-32" aria-labelledby="cum-t">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-4">
+      <div>
+        <h2 id="cum-t" class="text-4xl leading-tight font-bold tracking-tight lg:text-5xl">Cum se lucrează cu el</h2>
+        <p class="mt-5 max-w-sm text-lg text-muted">Pregătești stick-ul o dată, acasă. În laborator, fiecare calculator cere un click.</p>
       </div>
     </div>
 
-    <div class="stage reveal">
-      <p><b>În laborator,</b> pornești <code>Instalator.exe</code>, iar Windows îți cere o singură dată drepturile de administrator. Pe Linux scrii în terminal <code>sh /media/…/instalator.sh</code> și dai parola o dată. Litera stick-ului nu contează.</p>
-      <figure class="photo">
-        <img src="assets/laborator.jpg" width="1920" height="1440" alt="Un laborator de informatică cu rânduri de calculatoare și scaune goale" loading="lazy">
-        <figcaption>Un laborator obișnuit: aceleași programe pe fiecare masă.</figcaption>
-      </figure>
-    </div>
-
-    <div class="stage reveal">
-      <p><b>Pe ecran,</b> vezi ce lipsește și ce e vechi. Programul citește versiunea instalată (din registry pe Windows, din dpkg pe Linux) și o compară cu cea de pe stick: lipsa și versiunile vechi sunt deja bifate, cele la zi nu.</p>
-      <div class="rowpiece" data-ui>
-        <span class="box on"><i class="ic" aria-hidden="true"></i></span> <b>Cangurul 3.0.6</b> <span class="st">actualizare 3.0.2 → 3.0.6</span>
+    <div class="grid gap-20 lg:col-span-7 lg:col-start-6">
+      <div class="reveal grid gap-5">
+        <p class="text-lg leading-relaxed text-muted"><b class="font-semibold text-ink">Acasă,</b> dezarhivezi zip-ul pe stick. Lângă program stă mapa <code class="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink">Windows</code> (sau <code class="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink">Linux</code>), cu câte o mapă pentru fiecare program: installerul lui și un fișier scurt, <code class="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink">program.toml</code>, care spune ce versiune este și cum se instalează fără ferestre.</p>
+        <div class="rounded-lg bg-panel p-5 text-sm leading-loose" data-ui>
+          <div class="font-semibold">E:\</div>
+          <div class="pl-5">Instalator.exe</div>
+          <div class="pl-5 font-semibold">Windows\</div>
+          <div class="pl-10"><b>Furnica\</b> <span class="block text-muted sm:inline">program.toml, furnica-3.0.5-windows7-x86-portable.zip</span></div>
+          <div class="pl-10"><b>Cangurul\</b> <span class="block text-muted sm:inline">program.toml, cangurul-3.0.6-windows7-x86-portable.zip</span></div>
+          <div class="pl-10"><b>Audacity\</b> <span class="block text-muted sm:inline">program.toml, audacity-win-3.6.4-64bit.exe</span></div>
+          <div class="pl-5 font-semibold">jurnal\</div>
+        </div>
       </div>
-    </div>
 
-    <div class="stage reveal">
-      <p><b>Apeși „Instalează” și pleci</b> la următorul calculator. La întoarcere vezi lângă fiecare program dacă a reușit și un rezumat. Ce s-a întâmplat rămâne pe stick, într-un jurnal cu numele calculatorului.</p>
-<pre class="journal static"><code>09:14:02 Windows 10 · 64 biți · Administrator
+      <div class="reveal grid gap-5">
+        <p class="text-lg leading-relaxed text-muted"><b class="font-semibold text-ink">În laborator,</b> pornești <code class="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink">Instalator.exe</code>, iar Windows îți cere o singură dată drepturile de administrator. Pe Linux scrii în terminal <code class="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink">sh /media/…/instalator.sh</code> și dai parola o dată. Litera stick-ului nu contează.</p>
+        <figure>
+          <img class="aspect-video w-full rounded-lg object-cover" src="assets/laborator.jpg" width="1920" height="1440" alt="Un laborator de informatică cu rânduri de calculatoare și scaune goale" loading="lazy">
+          <figcaption class="mt-2.5 text-sm text-muted">Un laborator obișnuit: aceleași programe pe fiecare masă.</figcaption>
+        </figure>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="text-lg leading-relaxed text-muted"><b class="font-semibold text-ink">Pe ecran,</b> vezi ce lipsește și ce e vechi. Programul citește versiunea instalată (din registry pe Windows, din dpkg pe Linux) și o compară cu cea de pe stick: lipsa și versiunile vechi sunt deja bifate, cele la zi nu.</p>
+        <div class="flex flex-wrap items-center gap-3 rounded-lg bg-panel px-5 py-4 text-[15px]" data-ui>
+          <span class="grid size-[18px] place-items-center rounded-[3px] bg-amber text-amber-ink"><i class="ic text-xs" aria-hidden="true"></i></span>
+          <b>Cangurul 3.0.6</b> <span class="text-muted">actualizare 3.0.2 → 3.0.6</span>
+        </div>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="text-lg leading-relaxed text-muted"><b class="font-semibold text-ink">Apeși „Instalează” și pleci</b> la următorul calculator. La întoarcere vezi lângă fiecare program dacă a reușit și un rezumat. Ce s-a întâmplat rămâne pe stick, într-un jurnal cu numele calculatorului.</p>
+<pre class="journal min-h-0"><code>09:14:02 Windows 10 · 64 biți · Administrator
 09:14:02 Furnica: dezarhivare E:\Windows\Furnica\furnica-3.0.5-windows7-x86-portable.zip → C:\Program Files\Furnica
 09:14:09 Furnica: Ok
 09:14:09 Cangurul: dezarhivare E:\Windows\Cangurul\cangurul-3.0.6-windows7-x86-portable.zip → C:\Program Files\Cangurul
 09:14:15 Cangurul: Ok
 09:14:15 Audacity: "E:\Windows\Audacity\audacity-win-3.6.4-64bit.exe" "/VERYSILENT" "/NORESTART"
 09:15:47 Audacity: Ok</code></pre>
-    </div>
+      </div>
 
-    <div class="stage reveal">
-      <p><b>La ora următoare,</b> elevii găsesc programele în meniul Start sau în meniul de aplicații, cu aceeași versiune pe fiecare calculator. Pe stick vin deja Furnica și Cangurul, executanții pentru învățarea algoritmilor.</p>
-      <div class="pair">
-        <figure><img src="assets/furnica.png" width="1280" height="800" alt="Furnica: programul cu tabela de litere și editorul de comenzi" loading="lazy"><figcaption>Furnica</figcaption></figure>
-        <figure><img src="assets/cangurul.png" width="1280" height="800" alt="Cangurul: programul cu câmpul pe care cangurul desenează linii" loading="lazy"><figcaption>Cangurul</figcaption></figure>
+      <div class="reveal grid gap-5">
+        <p class="text-lg leading-relaxed text-muted"><b class="font-semibold text-ink">La ora următoare,</b> elevii găsesc programele în meniul Start sau în meniul de aplicații, cu aceeași versiune pe fiecare calculator. Pe stick vin deja Furnica și Cangurul, executanții pentru învățarea algoritmilor.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="assets/furnica.png" width="1280" height="800" alt="Furnica: programul cu tabela de litere și editorul de comenzi" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Furnica</figcaption></figure>
+          <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="assets/cangurul.png" width="1280" height="800" alt="Cangurul: programul cu câmpul pe care cangurul desenează linii" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Cangurul</figcaption></figure>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="try" id="incearca" aria-labelledby="incearca-t">
-  <div class="try-head">
-    <h2 id="incearca-t">Încearcă pe alt calculator</h2>
-    <p>Alege sistemul și ce e deja instalat: lista se schimbă după aceleași reguli ca în program.</p>
-  </div>
-  <div class="panel" id="sim">
-    <div class="panel-demo">
-      <div class="app" data-ui>
-        <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys" id="sim-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="reușit"></i></span></div>
-        <div class="app-list" id="sim-list"></div>
-        <div class="app-foot"><span class="app-summary"></span><span class="app-btn app-primary" id="sim-count">Instalează (0)</span></div>
+<!-- Încearcă: demonstrația și controalele ei. -->
+<section id="incearca" class="py-24 lg:py-32" aria-labelledby="incearca-t">
+  <div class="container-page">
+    <div class="max-w-2xl">
+      <h2 id="incearca-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Încearcă pe alt calculator</h2>
+      <p class="mt-4 text-lg text-muted">Alege sistemul și ce e deja instalat: lista se schimbă după aceleași reguli ca în program.</p>
+    </div>
+    <div class="panel relative mt-10 grid grid-cols-1 overflow-hidden rounded-2xl bg-panel lg:grid-cols-[1.6fr_1fr]">
+      <div class="min-w-0 bg-panel-2/60 p-4 pb-6 sm:p-8 lg:p-10 lg:pb-20">
+        <div class="app shadow-none" data-ui>
+          <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys" id="sim-sys">Windows 10 · 64 biți · Administrator</span></div>
+          <div class="app-list" id="sim-list"></div>
+          <div class="app-foot"><span class="app-summary"></span><span class="app-btn app-primary" id="sim-count">Instalează (0)</span></div>
+        </div>
       </div>
+      <form class="grid min-w-0 content-start gap-1 p-4 pb-16 text-[15px] sm:p-8" data-ui id="sim-form" aria-label="Calculatorul simulat">
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Sistem</span>
+          <select name="os" class="min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm">
+            <option value="win8">Windows 8.1</option>
+            <option value="win10" selected>Windows 10</option>
+            <option value="win11">Windows 11</option>
+            <option value="ubuntu">Ubuntu 24.04</option>
+            <option value="mint">Linux Mint 22</option>
+            <option value="antix">antiX 23</option>
+          </select>
+        </label>
+        <fieldset class="flex min-h-12 items-center justify-between gap-3">
+          <legend class="float-left">Biți</legend>
+          <span class="flex gap-4"><label class="flex items-center gap-1.5"><input class="size-4 accent-amber" type="radio" name="arch" value="x86"> 32</label><label class="flex items-center gap-1.5"><input class="size-4 accent-amber" type="radio" name="arch" value="x64" checked> 64</label></span>
+        </fieldset>
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Furnica</span>
+          <select name="Furnica" class="min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm"><option value="">lipsește</option><option value="3.0.2">3.0.2</option><option value="3.0.5">3.0.5</option><option value="msi">pusă din .msi</option></select>
+        </label>
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Cangurul</span>
+          <select name="Cangurul" class="min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm"><option value="">lipsește</option><option value="3.0.2" selected>3.0.2</option><option value="3.0.6">3.0.6</option></select>
+        </label>
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Sumatra PDF</span>
+          <select name="Sumatra PDF" class="min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm"><option value="">lipsește</option><option value="3.4.6">3.4.6</option><option value="3.5.2" selected>3.5.2</option></select>
+        </label>
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Audacity</span>
+          <select name="Audacity" class="min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm"><option value="" selected>lipsește</option><option value="3.6.4">3.6.4</option></select>
+        </label>
+        <label class="flex min-h-12 items-center justify-between gap-3"><span>Drepturi de administrator</span>
+          <input class="size-[18px] accent-amber" type="checkbox" name="admin" checked>
+        </label>
+      </form>
+      <a class="absolute bottom-6 left-4 text-[15px] text-amber underline underline-offset-4 sm:left-8 lg:left-10" href="https://github.com/nazdravan/installer#cum-adaug-un-program">Cum descriu un program nou →</a>
     </div>
-    <form class="panel-controls" data-ui id="sim-form" aria-label="Calculatorul simulat">
-      <label class="ctl"><span>Sistem</span>
-        <select name="os">
-          <option value="win8">Windows 8.1</option>
-          <option value="win10" selected>Windows 10</option>
-          <option value="win11">Windows 11</option>
-          <option value="ubuntu">Ubuntu 24.04</option>
-          <option value="mint">Linux Mint 22</option>
-          <option value="antix">antiX 23</option>
-        </select>
-      </label>
-      <fieldset class="ctl"><legend>Biți</legend>
-        <label><input type="radio" name="arch" value="x86"> 32</label>
-        <label><input type="radio" name="arch" value="x64" checked> 64</label>
-      </fieldset>
-      <label class="ctl"><span>Furnica</span>
-        <select name="Furnica"><option value="">lipsește</option><option value="3.0.2">3.0.2</option><option value="3.0.5">3.0.5</option><option value="msi">pusă din .msi</option></select>
-      </label>
-      <label class="ctl"><span>Cangurul</span>
-        <select name="Cangurul"><option value="">lipsește</option><option value="3.0.2" selected>3.0.2</option><option value="3.0.6">3.0.6</option></select>
-      </label>
-      <label class="ctl"><span>Sumatra PDF</span>
-        <select name="Sumatra PDF"><option value="">lipsește</option><option value="3.4.6">3.4.6</option><option value="3.5.2" selected>3.5.2</option></select>
-      </label>
-      <label class="ctl"><span>Audacity</span>
-        <select name="Audacity"><option value="" selected>lipsește</option><option value="3.6.4">3.6.4</option></select>
-      </label>
-      <label class="ctl"><span>Drepturi de administrator</span>
-        <input type="checkbox" name="admin" checked>
-      </label>
-    </form>
-    <a class="panel-link" href="https://github.com/nazdravan/installer#cum-adaug-un-program">Cum descriu un program nou →</a>
+    <p class="mt-4 text-sm text-muted">Programele în afară de Furnica și Cangurul sunt exemple: pe stick-ul tău pui ce îți trebuie.</p>
   </div>
-  <p class="try-note">Programele în afară de Furnica și Cangurul sunt exemple: pe stick-ul tău pui ce îți trebuie.</p>
 </section>
 
-<section class="guarantees" id="garantii" aria-labelledby="garantii-t" data-ui>
-  <h2 id="garantii-t" class="sr">Pentru administratori</h2>
-  <label class="search"><span class="sr">Caută</span><input type="search" id="g-filter" placeholder="Ce se întâmplă pe calculator?" autocomplete="off"></label>
-  <ul class="glist" id="g-list">
-    <li class="sel" tabindex="0"><span class="g-name">Nimic de pe internet</span><span class="g-text">Totul vine de pe stick: installerele, descrierile, chiar și OpenGL-ul de rezervă pentru calculatoarele fără driver video. Rețeaua nu e folosită deloc.</span></li>
-    <li tabindex="0"><span class="g-name">Fără ferestre, fără „Next”</span><span class="g-text">msiexec rulează cu /qn /norestart, installerele .exe cu cheile silențioase din program.toml, apt-get cu -y. Calculatorul nu repornește singur.</span></li>
-    <li tabindex="0"><span class="g-name">Installerele blocate se opresc</span><span class="g-text">Dacă un installer așteaptă totuși un click, după 30 de minute e oprit împreună cu procesele pornite de el, iar coada merge mai departe.</span></li>
-    <li tabindex="0"><span class="g-name">O eroare nu oprește restul</span><span class="g-text">Fiecare program își primește rezultatul, iar o eroare vine cu motivul (codul de ieșire, mesajul lui apt), iar celelalte se instalează în continuare.</span></li>
-    <li tabindex="0"><span class="g-name">Doar ce lipsește sau e vechi</span><span class="g-text">Versiunea instalată se citește din registry (ambele vederi pe 64 de biți), din dpkg sau din marcajul lăsat de instalator, și se compară cu cea de pe stick.</span></li>
-    <li tabindex="0"><span class="g-name">Nu strică alte instalări</span><span class="g-text">Dacă un program a fost pus altfel în aceeași mapă (de exemplu din .msi), instalatorul îl lasă neatins și îți spune să-l dezinstalezi întâi.</span></li>
-    <li tabindex="0"><span class="g-name">Jurnal pentru fiecare calculator</span><span class="g-text">Pe stick rămâne jurnal\NUMECALCULATOR-dată-oră.txt cu sistemul, comenzile rulate și rezultatul fiecăreia. Pe un stick protejat la scriere, instalarea merge fără jurnal.</span></li>
-    <li tabindex="0"><span class="g-name">Cod deschis</span><span class="g-text">Scris în Rust, licență GPL-3.0. Codul, descrierile și build-urile sunt publice pe GitHub, cu sume de control SHA256 pentru fiecare arhivă.</span></li>
-  </ul>
-  <p class="g-empty" hidden>Nimic găsit. Încearcă „jurnal”, „internet” sau „versiune”.</p>
+<!-- Pentru administratori: garanțiile ca un meniu de comenzi mărit. -->
+<section id="garantii" class="bg-panel/40 py-24 lg:py-32" aria-labelledby="garantii-t" data-ui>
+  <div class="container-page">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="garantii-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Pentru administratori</h2>
+      <p class="max-w-md text-muted">Ce se întâmplă pe calculator când apeși „Instalează”. Alege o garanție sau caută.</p>
+    </div>
+    <label class="mt-10 block"><span class="sr-only">Caută</span>
+      <input type="search" id="g-filter" placeholder="Caută: jurnal, internet, versiune…" autocomplete="off" class="w-full rounded-md bg-panel px-5 py-4 text-xl font-medium tracking-tight placeholder:text-muted lg:text-3xl">
+    </label>
+    <ul class="glist mt-4" id="g-list">
+      <li class="sel" tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Nimic de pe internet</span><span class="g-text">Totul vine de pe stick: installerele, descrierile, chiar și OpenGL-ul de rezervă pentru calculatoarele fără driver video. Rețeaua nu e folosită deloc.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Fără ferestre, fără „Next”</span><span class="g-text">msiexec rulează cu /qn /norestart, installerele .exe cu cheile silențioase din program.toml, apt-get cu -y. Calculatorul nu repornește singur.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Installerele blocate se opresc</span><span class="g-text">Dacă un installer așteaptă totuși un click, după 30 de minute e oprit împreună cu procesele pornite de el, iar coada merge mai departe.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">O eroare nu oprește restul</span><span class="g-text">Fiecare program își primește rezultatul, iar o eroare vine cu motivul (codul de ieșire, mesajul lui apt); celelalte se instalează în continuare.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Doar ce lipsește sau e vechi</span><span class="g-text">Versiunea instalată se citește din registry (ambele vederi pe 64 de biți), din dpkg sau din marcajul lăsat de instalator, și se compară cu cea de pe stick.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Nu strică alte instalări</span><span class="g-text">Dacă un program a fost pus altfel în aceeași mapă (de exemplu din .msi), instalatorul îl lasă neatins și îți spune să-l dezinstalezi întâi.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Jurnal pentru fiecare calculator</span><span class="g-text">Pe stick rămâne jurnal\NUMECALCULATOR-dată-oră.txt cu sistemul, comenzile rulate și rezultatul fiecăreia. Pe un stick protejat la scriere, instalarea merge fără jurnal.</span></li>
+      <li tabindex="0"><span class="block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">Cod deschis</span><span class="g-text">Scris în Rust, licență GPL-3.0. Codul, descrierile și build-urile sunt publice pe GitHub, cu sume de control SHA256 pentru fiecare arhivă.</span></li>
+    </ul>
+    <p class="g-empty mt-4 text-muted" hidden>Nimic găsit. Încearcă „jurnal”, „internet” sau „versiune”.</p>
+  </div>
 </section>
 
-<section class="systems" id="sisteme" aria-labelledby="sisteme-t">
-  <div class="sys-head">
-    <h2 id="sisteme-t"><span class="soft">Ce sisteme și</span> ce pachete</h2>
-    <a class="button" href="#descarca">Descarcă</a>
-  </div>
-  <div class="sys-body">
-    <div class="tabs" role="tablist" aria-label="Sistem">
-      <button role="tab" aria-selected="true" aria-controls="t-win" id="tab-win"><b>Windows</b><span>8 · 8.1 · 10 · 11</span></button>
-      <button role="tab" aria-selected="false" aria-controls="t-lin" id="tab-lin"><b>Linux</b><span>Debian și urmașii</span></button>
+<!-- Sisteme: file și benzi. -->
+<section id="sisteme" class="py-24 lg:py-32" aria-labelledby="sisteme-t">
+  <div class="container-page">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="sisteme-t" class="text-4xl leading-tight font-bold tracking-tight lg:text-5xl"><span class="block text-muted">Ce sisteme și</span> ce pachete</h2>
+      <a class="btn" href="#descarca">Descarcă</a>
     </div>
-    <div class="bands" role="tabpanel" id="t-win" aria-labelledby="tab-win">
-      <div class="band"><b class="b-k">Sisteme</b><span class="b-t">Windows 8, 8.1, 10 și 11<small>un singur Instalator.exe, pe 32 și pe 64 de biți</small></span><span class="b-r">fără .NET, fără Visual C++</span></div>
-      <div class="band"><b class="b-k">.msi</b><span class="b-t">msiexec /i … /qn /norestart<small>plus argumentele tale, exact cum le scrii</small></span><span class="b-r">registry</span></div>
-      <div class="band"><b class="b-k">.exe</b><span class="b-t">cu cheile silențioase din program.toml<small>Inno Setup: /VERYSILENT · NSIS: /S</small></span><span class="b-r">registry</span></div>
-      <div class="band"><b class="b-k">.zip</b><span class="b-t">dezarhivat în Program Files<small>scurtături în meniul Start și pe desktop</small></span><span class="b-r">marcaj</span></div>
-    </div>
-    <div class="bands" role="tabpanel" id="t-lin" aria-labelledby="tab-lin" hidden>
-      <div class="band"><b class="b-k">Sisteme</b><span class="b-t">Ubuntu 22.04+, Linux Mint 21+, Q4OS, antiX<small>64 de biți; pornire cu sh instalator.sh</small></span><span class="b-r">pkexec sau sudo</span></div>
-      <div class="band"><b class="b-k">.deb</b><span class="b-t">apt-get install -y<small>aduce și dependențele, așteaptă dacă apt e ocupat</small></span><span class="b-r">dpkg</span></div>
-      <div class="band"><b class="b-k">AppImage</b><span class="b-t">dezarhivat în /opt<small>fără FUSE, apare în meniul de aplicații</small></span><span class="b-r">marcaj</span></div>
-      <div class="band"><b class="b-k">.rpm</b><span class="b-t">prin alien<small>doar dacă programul nu are deb sau AppImage</small></span><span class="b-r">dpkg</span></div>
-    </div>
-  </div>
-  <div class="toml">
-    <p>Un program nou înseamnă o mapă cu installerul lui și un fișier ca acesta.</p>
-<pre><code>name = "Audacity"
+    <div class="mt-12 grid gap-4 lg:grid-cols-[180px_1fr] lg:gap-10">
+      <div class="sticky top-16 z-10 grid grid-cols-2 content-start gap-1.5 bg-ground py-1.5 lg:static lg:grid-cols-1 lg:bg-transparent" role="tablist" aria-label="Sistem">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="t-win" id="tab-win"><b>Windows</b><span>8 · 8.1 · 10 · 11</span></button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="t-lin" id="tab-lin"><b>Linux</b><span>Debian și urmașii</span></button>
+      </div>
+      <div class="grid gap-1" role="tabpanel" id="t-win" aria-labelledby="tab-win">
+        <div class="grid items-center gap-1 rounded-md bg-panel px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">Sisteme</b><span class="grid text-lg font-medium">Windows 8, 8.1, 10 și 11<small class="text-sm font-normal text-muted">un singur Instalator.exe, pe 32 și pe 64 de biți</small></span><span class="text-sm text-muted">fără .NET, fără Visual C++</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel-2 px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">.msi</b><span class="grid text-lg font-medium">msiexec /i … /qn /norestart<small class="text-sm font-normal text-muted">plus argumentele tale, exact cum le scrii</small></span><span class="text-sm text-muted">registry</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">.exe</b><span class="grid text-lg font-medium">cu cheile silențioase din program.toml<small class="text-sm font-normal text-muted">Inno Setup: /VERYSILENT · NSIS: /S</small></span><span class="text-sm text-muted">registry</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel-2 px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">.zip</b><span class="grid text-lg font-medium">dezarhivat în Program Files<small class="text-sm font-normal text-muted">scurtături în meniul Start și pe desktop</small></span><span class="text-sm text-muted">marcaj</span></div>
+      </div>
+      <div class="grid gap-1 lg:col-start-2" role="tabpanel" id="t-lin" aria-labelledby="tab-lin" hidden>
+        <div class="grid items-center gap-1 rounded-md bg-panel px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">Sisteme</b><span class="grid text-lg font-medium">Ubuntu 22.04+, Linux Mint 21+, Q4OS, antiX<small class="text-sm font-normal text-muted">64 de biți; pornire cu sh instalator.sh</small></span><span class="text-sm text-muted">pkexec sau sudo</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel-2 px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">.deb</b><span class="grid text-lg font-medium">apt-get install -y<small class="text-sm font-normal text-muted">aduce și dependențele, așteaptă dacă apt e ocupat</small></span><span class="text-sm text-muted">dpkg</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">AppImage</b><span class="grid text-lg font-medium">dezarhivat în /opt<small class="text-sm font-normal text-muted">fără FUSE, apare în meniul de aplicații</small></span><span class="text-sm text-muted">marcaj</span></div>
+        <div class="grid items-center gap-1 rounded-md bg-panel-2 px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5"><b class="text-xl">.rpm</b><span class="grid text-lg font-medium">prin alien<small class="text-sm font-normal text-muted">doar dacă programul nu are deb sau AppImage</small></span><span class="text-sm text-muted">dpkg</span></div>
+      </div>
+      <div class="grid gap-4 lg:col-start-2">
+        <p class="mt-6 text-muted">Un program nou înseamnă o mapă cu installerul lui și un fișier ca acesta.</p>
+<pre class="overflow-x-auto rounded-lg bg-sunk px-6 py-5 font-mono text-sm leading-relaxed"><code>name = "Audacity"
 version = "3.6.4"
 category = "Multimedia"
 
@@ -220,37 +243,43 @@ arch = "x64"
 kind = "exe"
 file = "audacity-win-3.6.4-64bit.exe"
 args = ["/VERYSILENT", "/NORESTART"]</code></pre>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="cta-wrap" id="descarca" aria-labelledby="descarca-t">
- <div class="cta">
-  <div class="tile side"><img src="assets/laborator-2.jpg" width="1920" height="1964" alt="Un laborator școlar cu calculatoare în boxe de lemn" loading="lazy"></div>
-  <div class="tile main">
-    <h2 id="descarca-t">Pune-l pe stick</h2>
-    <p>Dezarhivează zip-ul pe un stick. Furnica și Cangurul sunt deja în el; instrucțiunile sunt în CITESTE.txt.</p>
-    <div class="dl">
-      <a class="button dark" id="dl-win" href="https://github.com/nazdravan/installer/releases/latest">⬇ Windows 8–11 <span data-size="windows">· 68 MB</span></a>
-      <a class="button dark ghost" id="dl-lin" href="https://github.com/nazdravan/installer/releases/latest">⬇ Linux <span data-size="linux">· 14 MB</span></a>
+<!-- Descărcare -->
+<section id="descarca" class="pb-24 lg:pb-32" aria-labelledby="descarca-t">
+  <div class="container-page">
+    <div class="grid overflow-hidden rounded-2xl bg-amber text-amber-ink md:grid-cols-[2fr_3fr]">
+      <img class="h-56 w-full object-cover md:h-full" src="assets/laborator-2.jpg" width="1920" height="1964" alt="Un laborator școlar cu calculatoare în boxe de lemn" loading="lazy">
+      <div class="flex flex-col justify-center gap-4 p-8 sm:p-12">
+        <h2 id="descarca-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Pune-l pe stick</h2>
+        <p class="max-w-lg text-lg">Dezarhivează zip-ul pe un stick. Furnica și Cangurul sunt deja în el; instrucțiunile sunt în CITESTE.txt.</p>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <a class="inline-flex items-center gap-2 rounded-md bg-amber-ink px-5 py-3 font-semibold text-amber transition hover:-translate-y-px hover:bg-[#2a2010]" id="dl-win" href="https://github.com/nazdravan/installer/releases/latest">Windows 8–11 <span class="font-normal opacity-80" data-size="windows">· 68 MB</span></a>
+          <a class="inline-flex items-center gap-2 rounded-md border-2 border-amber-ink px-5 py-2.5 font-semibold transition hover:bg-amber-ink/10" id="dl-lin" href="https://github.com/nazdravan/installer/releases/latest">Linux <span class="font-normal opacity-80" data-size="linux">· 14 MB</span></a>
+        </div>
+        <p class="text-sm"><span id="dl-ver">Versiunea 0.1.0</span> · <a class="underline underline-offset-4" href="https://github.com/nazdravan/installer/releases/latest">toate fișierele și SHA256</a></p>
+      </div>
     </div>
-    <p class="dl-meta"><span id="dl-ver">Versiunea 0.1.0</span> · <a href="https://github.com/nazdravan/installer/releases/latest">toate fișierele și SHA256</a></p>
   </div>
-  <div class="tile side flat"></div>
- </div>
 </section>
 
 </main>
 
-<footer class="foot">
-  <span class="f-what">Instalator școală, software liber</span>
-  <span class="f-links">
-    <a href="https://github.com/nazdravan/installer">GitHub</a>
-    <a href="https://github.com/nazdravan/installer#readme">Documentație</a>
-    <a href="https://nazdravan.github.io/furnica/">Furnica</a>
-    <a href="https://nazdravan.github.io/cangurul/">Cangurul</a>
-  </span>
-  <span class="f-year">2026 · GPL-3.0</span>
-  <p class="credits">Fotografii: <a href="https://commons.wikimedia.org/wiki/File:Computer_Lab_Baraboo.jpg">„Computer Lab Baraboo”</a> de JackFromWisconsin, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0</a>; <a href="https://commons.wikimedia.org/wiki/File:Diaz_College_Computer_Laboratory.jpg">„Diaz College Computer Laboratory”</a> de Rc ramz, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; ambele prin Wikimedia Commons.</p>
+<footer class="bg-panel/40 py-10 text-[15px]">
+  <div class="container-page grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-baseline">
+    <span class="text-muted">Instalator școală, software liber</span>
+    <span class="flex flex-wrap gap-x-6 gap-y-2">
+      <a class="underline-offset-4 hover:underline" href="https://github.com/nazdravan/installer">GitHub</a>
+      <a class="underline-offset-4 hover:underline" href="https://github.com/nazdravan/installer#readme">Documentație</a>
+      <a class="underline-offset-4 hover:underline" href="https://nazdravan.github.io/furnica/">Furnica</a>
+      <a class="underline-offset-4 hover:underline" href="https://nazdravan.github.io/cangurul/">Cangurul</a>
+    </span>
+    <span class="text-muted md:justify-self-end">2026 · GPL-3.0</span>
+    <p class="text-[13px] text-muted md:col-span-3">Fotografii: <a class="text-ink underline underline-offset-2" href="https://commons.wikimedia.org/wiki/File:Computer_Lab_Baraboo.jpg">„Computer Lab Baraboo”</a> de JackFromWisconsin, <a class="text-ink underline underline-offset-2" href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0</a>; <a class="text-ink underline underline-offset-2" href="https://commons.wikimedia.org/wiki/File:Diaz_College_Computer_Laboratory.jpg">„Diaz College Computer Laboratory”</a> de Rc ramz, <a class="text-ink underline underline-offset-2" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; ambele prin Wikimedia Commons.</p>
+  </div>
 </footer>
 
 </body>

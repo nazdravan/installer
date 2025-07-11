@@ -1,0 +1,116 @@
+/* Instalator școală: pagina de prezentare, Tailwind CSS 4. Construire: site/build.sh → site/style.css */
+@import "tailwindcss" source(none);
+@source "../index.html";
+@source "../main.js";
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("assets/inter-latin-ext.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Tema A: grafit și chihlimbar. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --color-ground: #16181c;
+  --color-panel: #1d2026;
+  --color-panel-2: #262a31;
+  --color-panel-3: #30353e;
+  --color-edge: #343944;
+  --color-sunk: #0f1013;
+  --color-ink: #e9ebee;
+  --color-muted: #a3a8b1;
+  --color-amber: #f2a93b;
+  --color-amber-hi: #ffbc57;
+  --color-amber-ink: #1b1406;
+  --color-ok: #7bd88f;
+  --color-err: #ff7f70;
+  --animate-rise: rise .7s cubic-bezier(.2, .7, .2, 1) both;
+  --animate-spin-fast: spin .8s linear infinite;
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+  }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-ground text-ink font-sans antialiased; }
+  :focus-visible { @apply outline-2 outline-offset-3 outline-amber; }
+  ::selection { @apply bg-amber text-amber-ink; }
+  [hidden] { display: none !important; }
+}
+
+/* Piesele programului, folosite și de main.js. */
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md bg-amber px-5 py-3 font-semibold text-amber-ink transition hover:-translate-y-px hover:bg-amber-hi active:translate-y-px; }
+  .btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-amber px-5 py-2.5 font-semibold text-amber transition hover:bg-amber/10; }
+
+  .app { @apply overflow-hidden rounded-xl border border-edge bg-panel text-sm shadow-2xl shadow-black/50; }
+  .app-titlebar { @apply flex justify-between gap-3 bg-panel-2 px-4 py-3 font-semibold; }
+  .app-sys { @apply truncate font-normal text-muted; }
+  .app-list { @apply relative min-h-56 px-4 pt-2 pb-3; }
+  .app-cat { @apply mt-2.5 mb-0.5 text-[13px] text-muted; }
+  .app-row { @apply -mx-2 flex cursor-pointer flex-wrap items-center gap-x-2.5 rounded px-2 py-1.5 transition-colors hover:bg-panel-2 sm:flex-nowrap; }
+  .app-row b { @apply font-semibold whitespace-nowrap; }
+  .app-row .st { @apply basis-full pl-6.5 text-muted sm:basis-auto sm:pl-0; }
+  .app-row .res { @apply absolute right-4 font-bold whitespace-nowrap sm:static sm:ml-auto; }
+  .app-row input { @apply m-0 size-4 accent-amber; }
+  .app-row.off { @apply cursor-default; }
+  .app-row.off b { @apply text-muted; }
+  .app-row.bad .st { @apply text-err; }
+  .app-foot { @apply flex items-center gap-2 bg-panel-2 px-4 py-2.5; }
+  .app-summary { @apply ml-auto text-muted; }
+  .app-btn { @apply cursor-pointer rounded border border-[#424854] bg-panel-3 px-3 py-1.5 transition hover:bg-[#3a404b] active:scale-95 disabled:cursor-default disabled:opacity-45; }
+  .app-primary { @apply border-amber bg-amber font-semibold text-amber-ink hover:bg-amber-hi; }
+  .spin { @apply inline-block size-3.5 animate-spin-fast rounded-full border-2 border-panel-3 border-t-amber align-[-2px]; }
+
+  .journal { @apply m-0 min-h-[7.4em] overflow-x-auto rounded-lg bg-sunk px-4 py-3.5 font-mono text-[13px] leading-relaxed whitespace-pre-wrap text-muted; }
+  .journal .ok { @apply text-ok; }
+
+  /* Bifa și crucea programului, desenate. */
+  .ic {
+    @apply inline-block size-[1em] bg-current align-[-.15em];
+    --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 8.5l4 4 8-9' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    -webkit-mask: var(--m) center / contain no-repeat;
+    mask: var(--m) center / contain no-repeat;
+  }
+  .ic.ok { @apply text-ok; }
+  .ic.err {
+    @apply text-err;
+    --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 3.5l9 9M12.5 3.5l-9 9' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .glist li { @apply cursor-pointer rounded-md px-3 py-1.5 transition-colors; }
+  .glist li:not(.sel):hover { @apply bg-panel; }
+  .glist li.sel { @apply bg-amber text-amber-ink; }
+  .g-text { @apply hidden max-w-3xl pt-2 pb-3 text-base leading-relaxed; }
+  .glist li.sel .g-text { @apply block; }
+
+  .tab { @apply grid h-16 cursor-pointer rounded-md bg-panel px-4 py-3 text-left transition-colors hover:bg-panel-2; }
+  .tab span { @apply text-[13px] text-muted; }
+  .tab[aria-selected="true"] { @apply bg-ink text-ground; }
+  .tab[aria-selected="true"] span { @apply text-[#4b5058]; }
+}
+
+/* Intrări la derulare, doar când scriptul rulează. */
+@layer utilities {
+  .js .reveal > * { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1); }
+  .js .reveal > :nth-child(2) { transition-delay: .08s; }
+  .js .reveal.in > * { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .reveal > * { opacity: 1; transform: none; }
+  }
+}
