@@ -6,6 +6,21 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const sleep = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
 
+/* Tema deschisă / întunecată; alegerea se ține minte. */
+(function theme() {
+  const button = $("#theme");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("tema", next);
+    } catch {
+      // Fără localStorage tema se schimbă doar pe pagina deschisă.
+    }
+  });
+})();
+
 /* Antetul: fereastra programului chiar instalează (pe jumătate de ecran, desigur). */
 (function heroDemo() {
   const app = $("#hero-app");
@@ -262,7 +277,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
       $(id).href = asset.browser_download_url;
       $(`[data-size="${os}"]`).textContent = mb(asset.size);
     }
-    $("#dl-ver").textContent = `Versiunea ${rel.tag_name.replace(/^v/, "")}`;
+    const ver = $("#dl-ver");
+    ver.textContent = `${ver.dataset.prefix} ${rel.tag_name.replace(/^v/, "")}`;
   } catch {
     // Fără rețea sau limită de cereri: rămân legăturile spre pagina release-ului.
   }

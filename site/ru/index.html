@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instalator școală: весь компьютерный класс с одной флешки</title>
+<meta name="description" content="Программа запускается с флешки и по очереди, без окон, устанавливает отмеченные программы: на Windows 8–11 и на Ubuntu, Linux Mint, Q4OS, antiX. Свободная, GPL-3.0.">
+<meta property="og:title" content="Instalator școală">
+<meta property="og:description" content="Одна флешка. Весь класс. Тихая установка на Windows и Linux.">
+<meta property="og:image" content="https://nazdravan.github.io/installer/assets/laborator.jpg">
+<link rel="alternate" hreflang="ro" href="https://nazdravan.github.io/installer/">
+<link rel="alternate" hreflang="en" href="https://nazdravan.github.io/installer/en/">
+<link rel="alternate" hreflang="ru" href="https://nazdravan.github.io/installer/ru/">
+<link rel="alternate" hreflang="x-default" href="https://nazdravan.github.io/installer/">
+<script>
+  // Tema înainte de prima pictare: alegerea salvată, altfel cea a sistemului.
+  try {
+    var t = localStorage.getItem("tema");
+    document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  } catch (e) {}
+</script>
+<link rel="preload" href="../assets/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<script defer src="../main.js"></script>
+</head>
+<body>
+
+<header class="sticky top-0 z-20 bg-ground/95">
+  <div class="container-page flex h-16 items-center gap-6">
+    <a class="font-bold tracking-tight" href="../">Instalator școală</a>
+    <nav class="ml-auto hidden gap-7 text-[15px] text-muted lg:flex" aria-label="Разделы">
+      <a class="transition-colors hover:text-ink" href="#cum">Как это работает</a>
+      <a class="transition-colors hover:text-ink" href="#incearca">Попробовать</a>
+      <a class="transition-colors hover:text-ink" href="#garantii">Администраторам</a>
+      <a class="transition-colors hover:text-ink" href="#sisteme">Системы</a>
+    </nav>
+    <nav class="ml-auto flex gap-1 text-sm lg:ml-0" aria-label="Язык">
+      <a class="lang" href="../" hreflang="ro" lang="ro" >RO</a>
+      <a class="lang" href="../en/" hreflang="en" lang="en" >EN</a>
+      <a class="lang" href="../ru/" hreflang="ru" lang="ru" aria-current="page">RU</a>
+    </nav>
+    <button type="button" id="theme" class="grid size-9 cursor-pointer place-items-center rounded-md text-muted transition-colors hover:bg-panel hover:text-ink" aria-label="Сменить тему (светлая / тёмная)" title="Сменить тему (светлая / тёмная)">
+      <svg class="theme-sun size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="theme-moon size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <a class="btn hidden px-4 py-2 text-sm sm:inline-flex" href="#descarca">Скачать</a>
+  </div>
+</header>
+
+<main>
+
+<!-- Antet: textul la stânga, fereastra programului lucrând la dreapta. -->
+<section class="container-page grid items-center gap-12 pt-14 pb-24 lg:grid-cols-12 lg:gap-10 lg:pt-24 lg:pb-32" aria-labelledby="titlu">
+  <div class="animate-rise lg:col-span-6">
+    <h1 id="titlu" class="text-5xl leading-[1.02] font-bold tracking-tight text-strong sm:text-6xl xl:text-[4.25rem]">Одна флешка.<br>Весь класс.</h1>
+    <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">Программа запускается с флешки, показывает программы с галочками и ставит их по очереди — без окон и без «Далее». На Windows 8–11 и на Linux.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="btn" href="#descarca">Скачать для Windows</a>
+      <a class="btn-outline" href="#descarca">Для Linux</a>
+    </div>
+    <p class="mt-6 text-sm text-muted">Бесплатно и свободно (GPL-3.0) · без интернета · Furnica и Cangurul в комплекте</p>
+  </div>
+
+  <div class="grid animate-rise gap-3 [animation-delay:.1s] lg:col-span-6">
+    <div class="app" data-ui id="hero-app" aria-label="Окно Instalator, демонстрация">
+      <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="✓"></i></span></div>
+      <div class="app-list">
+        <div class="app-cat">Educațional</div>
+        <label class="app-row"><input type="checkbox" checked data-name="Furnica"> <b>Furnica 3.0.5</b> <span class="st">nu e instalat</span> <span class="res"></span></label>
+        <label class="app-row"><input type="checkbox" checked data-name="Cangurul"> <b>Cangurul 3.0.6</b> <span class="st">actualizare 3.0.2 → 3.0.6</span> <span class="res"></span></label>
+        <div class="app-cat">Birou</div>
+        <label class="app-row"><input type="checkbox" data-name="Sumatra PDF"> <b>Sumatra PDF 3.5.2</b> <span class="st">la zi (3.5.2)</span> <span class="res"></span></label>
+        <div class="app-cat">Multimedia</div>
+        <label class="app-row"><input type="checkbox" checked data-name="Audacity"> <b>Audacity 3.6.4</b> <span class="st">nu e instalat</span> <span class="res"></span></label>
+        <label class="app-row"><input type="checkbox" data-name="Shotcut"> <b>Shotcut 24.11</b> <span class="st">nu e instalat</span> <span class="res"></span></label>
+      </div>
+      <div class="app-foot">
+        <button type="button" class="app-btn" data-act="all">Toate</button>
+        <button type="button" class="app-btn" data-act="none">Nimic</button>
+        <span class="app-summary" aria-live="polite"></span>
+        <button type="button" class="app-btn app-primary" data-act="install">Instalează (3)</button>
+      </div>
+    </div>
+    <pre class="journal" id="hero-journal" aria-label="Журнал на флешке"><code>jurnal\LAB-PC07-20261027-091402.txt
+09:14:02 Windows 10 · 64 biți · Administrator</code></pre>
+    <p class="text-sm text-muted">Сама программа на румынском; в демонстрациях — её настоящий интерфейс.</p>
+  </div>
+</section>
+
+<!-- Cum funcționează: titlul în stânga, pașii în dreapta. -->
+<section id="cum" class="bg-panel/40 py-24 lg:py-32" aria-labelledby="cum-t">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-4">
+      <h2 id="cum-t" class="text-4xl leading-tight font-bold tracking-tight lg:text-5xl">Как с ним работать</h2>
+      <p class="mt-5 max-w-sm text-lg text-muted">Флешку готовите один раз, дома. В классе каждому компьютеру — один щелчок.</p>
+    </div>
+
+    <div class="grid gap-20 lg:col-span-7 lg:col-start-6">
+      <div class="reveal grid gap-5">
+        <p class="step"><b>Дома</b> распакуйте архив на флешку. Рядом с программой лежит папка <code>Windows</code> (или <code>Linux</code>), в ней по папке на каждую программу: её установщик и короткий файл <code>program.toml</code> — какая это версия и как её поставить без окон.</p>
+        <div class="rounded-lg bg-panel p-5 text-sm leading-loose" data-ui>
+          <div class="font-semibold">E:\</div>
+          <div class="pl-5">Instalator.exe</div>
+          <div class="pl-5 font-semibold">Windows\</div>
+          <div class="pl-10"><b>Furnica\</b> <span class="block text-muted sm:inline">program.toml, furnica-3.0.5-windows7-x86-portable.zip</span></div>
+          <div class="pl-10"><b>Cangurul\</b> <span class="block text-muted sm:inline">program.toml, cangurul-3.0.6-windows7-x86-portable.zip</span></div>
+          <div class="pl-10"><b>Audacity\</b> <span class="block text-muted sm:inline">program.toml, audacity-win-3.6.4-64bit.exe</span></div>
+          <div class="pl-5 font-semibold">jurnal\</div>
+        </div>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="step"><b>В классе</b> запустите <code>Instalator.exe</code>, Windows один раз спросит права администратора. На Linux наберите в терминале <code>sh /media/…/instalator.sh</code> и один раз введите пароль. Буква флешки не важна.</p>
+        <figure>
+          <img class="aspect-video w-full rounded-lg object-cover" src="../assets/laborator.jpg" width="1920" height="1440" alt="Компьютерный класс с рядами компьютеров и пустыми стульями" loading="lazy">
+          <figcaption class="mt-2.5 text-sm text-muted">Обычный класс: одни и те же программы на каждом столе.</figcaption>
+        </figure>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="step"><b>На экране</b> видно, чего не хватает и что устарело. Программа читает установленную версию (из реестра в Windows, из dpkg в Linux) и сравнивает с версией на флешке: отсутствующие и устаревшие уже отмечены, актуальные — нет.</p>
+        <div class="flex flex-wrap items-center gap-3 rounded-lg bg-panel px-5 py-4 text-[15px]" data-ui>
+          <span class="grid size-[18px] place-items-center rounded-[3px] bg-amber text-amber-ink"><i class="ic text-xs" aria-hidden="true"></i></span>
+          <b>Cangurul 3.0.6</b> <span class="text-muted">actualizare 3.0.2 → 3.0.6</span>
+        </div>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="step"><b>Нажмите «Instalează» и идите</b> к следующему компьютеру. Вернувшись, вы увидите рядом с каждой программой, удалось ли, и итог. На флешке останется журнал с именем компьютера.</p>
+<pre class="journal min-h-0"><code>09:14:02 Windows 10 · 64 biți · Administrator
+09:14:02 Furnica: dezarhivare E:\Windows\Furnica\furnica-3.0.5-windows7-x86-portable.zip → C:\Program Files\Furnica
+09:14:09 Furnica: Ok
+09:14:09 Cangurul: dezarhivare E:\Windows\Cangurul\cangurul-3.0.6-windows7-x86-portable.zip → C:\Program Files\Cangurul
+09:14:15 Cangurul: Ok
+09:14:15 Audacity: "E:\Windows\Audacity\audacity-win-3.6.4-64bit.exe" "/VERYSILENT" "/NORESTART"
+09:15:47 Audacity: Ok</code></pre>
+      </div>
+
+      <div class="reveal grid gap-5">
+        <p class="step"><b>На следующем уроке</b> ученики найдут программы в меню «Пуск» или в меню приложений, с одной и той же версией на каждом компьютере. Furnica и Cangurul, исполнители для изучения алгоритмов, уже на флешке.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="../assets/furnica.png" width="1280" height="800" alt="Furnica: таблица букв и редактор команд" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Furnica</figcaption></figure>
+          <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="../assets/cangurul.png" width="1280" height="800" alt="Cangurul: поле, на котором кенгуру рисует линии" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Cangurul</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Încearcă: demonstrația și controalele ei. -->
+<section id="incearca" class="py-24 lg:py-32" aria-labelledby="incearca-t">
+  <div class="container-page">
+    <div class="max-w-2xl">
+      <h2 id="incearca-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Попробуйте на другом компьютере</h2>
+      <p class="mt-4 text-lg text-muted">Выберите систему и что уже установлено: список меняется по тем же правилам, что и в программе.</p>
+    </div>
+    <div class="panel relative mt-10 grid grid-cols-1 overflow-hidden rounded-2xl bg-panel lg:grid-cols-[1.6fr_1fr]">
+      <div class="min-w-0 bg-panel-2/60 p-4 pb-6 sm:p-8 lg:p-10 lg:pb-20">
+        <div class="app shadow-none" data-ui>
+          <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys" id="sim-sys">Windows 10 · 64 biți · Administrator</span></div>
+          <div class="app-list" id="sim-list"></div>
+          <div class="app-foot"><span class="app-summary"></span><span class="app-btn app-primary" id="sim-count">Instalează (0)</span></div>
+        </div>
+      </div>
+      <form class="grid min-w-0 content-start gap-1 p-4 pb-16 text-[15px] sm:p-8" data-ui id="sim-form" aria-label="Моделируемый компьютер">
+        <label class="ctl"><span>Система</span>
+          <select name="os" class="sel">
+            <option value="win8">Windows 8.1</option>
+            <option value="win10" selected>Windows 10</option>
+            <option value="win11">Windows 11</option>
+            <option value="ubuntu">Ubuntu 24.04</option>
+            <option value="mint">Linux Mint 22</option>
+            <option value="antix">antiX 23</option>
+          </select>
+        </label>
+        <fieldset class="ctl">
+          <legend class="float-left">Разрядность</legend>
+          <span class="flex gap-4"><label class="flex items-center gap-1.5"><input class="size-4 accent-amber" type="radio" name="arch" value="x86"> 32</label><label class="flex items-center gap-1.5"><input class="size-4 accent-amber" type="radio" name="arch" value="x64" checked> 64</label></span>
+        </fieldset>
+        <label class="ctl"><span>Furnica</span>
+          <select name="Furnica" class="sel"><option value="">нет</option><option value="3.0.2">3.0.2</option><option value="3.0.5">3.0.5</option><option value="msi">установлена из .msi</option></select>
+        </label>
+        <label class="ctl"><span>Cangurul</span>
+          <select name="Cangurul" class="sel"><option value="">нет</option><option value="3.0.2" selected>3.0.2</option><option value="3.0.6">3.0.6</option></select>
+        </label>
+        <label class="ctl"><span>Sumatra PDF</span>
+          <select name="Sumatra PDF" class="sel"><option value="">нет</option><option value="3.4.6">3.4.6</option><option value="3.5.2" selected>3.5.2</option></select>
+        </label>
+        <label class="ctl"><span>Audacity</span>
+          <select name="Audacity" class="sel"><option value="" selected>нет</option><option value="3.6.4">3.6.4</option></select>
+        </label>
+        <label class="ctl"><span>Права администратора</span>
+          <input class="size-[18px] accent-amber" type="checkbox" name="admin" checked>
+        </label>
+      </form>
+      <a class="link absolute bottom-6 left-4 text-[15px] sm:left-8 lg:left-10" href="https://github.com/nazdravan/installer#cum-adaug-un-program">Как описать новую программу →</a>
+    </div>
+    <p class="mt-4 text-sm text-muted">Программы, кроме Furnica и Cangurul, — примеры: на свою флешку кладите то, что нужно вам.</p>
+  </div>
+</section>
+
+<!-- Pentru administratori: garanțiile ca un meniu de comenzi mărit. -->
+<section id="garantii" class="bg-panel/40 py-24 lg:py-32" aria-labelledby="garantii-t" data-ui>
+  <div class="container-page">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="garantii-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Администраторам</h2>
+      <p class="max-w-md text-muted">Что происходит на компьютере, когда вы нажимаете «Instalează». Выберите гарантию или поищите.</p>
+    </div>
+    <label class="mt-10 block"><span class="sr-only">Поиск</span>
+      <input type="search" id="g-filter" placeholder="Поиск: журнал, интернет, версия…" autocomplete="off" class="w-full rounded-md bg-panel px-5 py-4 text-xl font-medium tracking-tight placeholder:text-muted lg:text-3xl">
+    </label>
+    <ul class="glist mt-4" id="g-list">
+      <li class="sel" tabindex="0"><span class="g-name">Ничего из интернета</span><span class="g-text">Всё берётся с флешки: установщики, описания, даже запасной OpenGL для компьютеров без видеодрайвера. Сеть не используется вовсе.</span></li>
+      <li tabindex="0"><span class="g-name">Без окон и без «Далее»</span><span class="g-text">msiexec запускается с /qn /norestart, установщики .exe — с тихими ключами из program.toml, apt-get — с -y. Компьютер сам не перезагружается.</span></li>
+      <li tabindex="0"><span class="g-name">Зависания прерываются</span><span class="g-text">Если установщик всё-таки ждёт щелчка, через 30 минут он останавливается вместе с запущенными им процессами, и очередь идёт дальше.</span></li>
+      <li tabindex="0"><span class="g-name">Одна ошибка не мешает остальным</span><span class="g-text">У каждой программы свой результат, ошибка — с причиной (код выхода, сообщение apt); остальные продолжают ставиться.</span></li>
+      <li tabindex="0"><span class="g-name">Только недостающее и устаревшее</span><span class="g-text">Установленная версия читается из реестра (оба представления на 64 битах), из dpkg или из метки установщика и сравнивается с версией на флешке.</span></li>
+      <li tabindex="0"><span class="g-name">Чужие установки не трогаются</span><span class="g-text">Если программа попала в ту же папку иначе (например, из .msi), установщик её не трогает и просит сначала удалить.</span></li>
+      <li tabindex="0"><span class="g-name">Журнал для каждого компьютера</span><span class="g-text">На флешке остаётся jurnal\ИМЯКОМПЬЮТЕРА-дата-время.txt с системой, выполненными командами и результатом каждой. На защищённой от записи флешке установка идёт без журнала.</span></li>
+      <li tabindex="0"><span class="g-name">Открытый код</span><span class="g-text">Написана на Rust, лицензия GPL-3.0. Код, описания и сборки открыты на GitHub, с контрольными суммами SHA256 для каждого архива.</span></li>
+    </ul>
+    <p class="g-empty mt-4 text-muted" hidden>Ничего не найдено. Попробуйте «журнал», «интернет» или «версия».</p>
+  </div>
+</section>
+
+<!-- Sisteme: file și benzi. -->
+<section id="sisteme" class="py-24 lg:py-32" aria-labelledby="sisteme-t">
+  <div class="container-page">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="sisteme-t" class="text-4xl leading-tight font-bold tracking-tight lg:text-5xl"><span class="block text-muted">Какие системы и</span> какие пакеты</h2>
+      <a class="btn" href="#descarca">Скачать</a>
+    </div>
+    <div class="mt-12 grid gap-4 lg:grid-cols-[180px_1fr] lg:gap-10">
+      <div class="sticky top-16 z-10 grid grid-cols-2 content-start gap-1.5 bg-ground py-1.5 lg:static lg:grid-cols-1 lg:bg-transparent" role="tablist" aria-label="Система">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="t-win" id="tab-win"><b>Windows</b><span>8 · 8.1 · 10 · 11</span></button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="t-lin" id="tab-lin"><b>Linux</b><span>Debian и семейство</span></button>
+      </div>
+      <div class="grid gap-1" role="tabpanel" id="t-win" aria-labelledby="tab-win">
+        <div class="band bg-panel"><b class="text-xl">Системы</b><span class="grid text-lg font-medium">Windows 8, 8.1, 10 и 11<small>один Instalator.exe для 32 и 64 бит</small></span><span class="text-sm text-muted">без .NET и Visual C++</span></div>
+        <div class="band bg-panel-2"><b class="text-xl">.msi</b><span class="grid text-lg font-medium">msiexec /i … /qn /norestart<small>плюс ваши аргументы, как написаны</small></span><span class="text-sm text-muted">registry</span></div>
+        <div class="band bg-panel"><b class="text-xl">.exe</b><span class="grid text-lg font-medium">с тихими ключами из program.toml<small>Inno Setup: /VERYSILENT · NSIS: /S</small></span><span class="text-sm text-muted">registry</span></div>
+        <div class="band bg-panel-2"><b class="text-xl">.zip</b><span class="grid text-lg font-medium">распаковка в Program Files<small>ярлыки в меню «Пуск» и на рабочем столе</small></span><span class="text-sm text-muted">метка</span></div>
+      </div>
+      <div class="grid gap-1 lg:col-start-2" role="tabpanel" id="t-lin" aria-labelledby="tab-lin" hidden>
+        <div class="band bg-panel"><b class="text-xl">Системы</b><span class="grid text-lg font-medium">Ubuntu 22.04+, Linux Mint 21+, Q4OS, antiX<small>64 бита; запуск через sh instalator.sh</small></span><span class="text-sm text-muted">pkexec / sudo</span></div>
+        <div class="band bg-panel-2"><b class="text-xl">.deb</b><span class="grid text-lg font-medium">apt-get install -y<small>подтягивает зависимости, ждёт, если apt занят</small></span><span class="text-sm text-muted">dpkg</span></div>
+        <div class="band bg-panel"><b class="text-xl">AppImage</b><span class="grid text-lg font-medium">распаковка в /opt<small>без FUSE, появляется в меню приложений</small></span><span class="text-sm text-muted">метка</span></div>
+        <div class="band bg-panel-2"><b class="text-xl">.rpm</b><span class="grid text-lg font-medium">через alien<small>только если у программы нет deb или AppImage</small></span><span class="text-sm text-muted">dpkg</span></div>
+      </div>
+      <div class="grid gap-4 lg:col-start-2">
+        <p class="mt-6 text-muted">Новая программа — это папка с её установщиком и такой файл.</p>
+<pre class="overflow-x-auto rounded-lg bg-sunk px-6 py-5 font-mono text-sm leading-relaxed"><code>name = "Audacity"
+version = "3.6.4"
+category = "Multimedia"
+
+[detect]
+registry_name = "Audacity"
+
+[[variant]]
+windows = ["10"]
+arch = "x64"
+kind = "exe"
+file = "audacity-win-3.6.4-64bit.exe"
+args = ["/VERYSILENT", "/NORESTART"]</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Descărcare -->
+<section id="descarca" class="pb-24 lg:pb-32" aria-labelledby="descarca-t">
+  <div class="container-page">
+    <div class="grid overflow-hidden rounded-2xl bg-amber text-amber-ink md:grid-cols-[2fr_3fr]">
+      <img class="h-56 w-full object-cover md:h-full" src="../assets/laborator-2.jpg" width="1920" height="1964" alt="Школьный компьютерный класс с компьютерами в деревянных кабинках" loading="lazy">
+      <div class="flex flex-col justify-center gap-4 p-8 sm:p-12">
+        <h2 id="descarca-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Запишите на флешку</h2>
+        <p class="max-w-lg text-lg">Распакуйте архив на флешку. Furnica и Cangurul уже внутри; инструкция — в CITESTE.txt (на румынском).</p>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <a class="inline-flex items-center gap-2 rounded-md bg-amber-ink px-5 py-3 font-semibold text-[#f2a93b] transition hover:-translate-y-px hover:bg-[#2a2010]" id="dl-win" href="https://github.com/nazdravan/installer/releases/latest">Windows 8–11 <span class="font-normal opacity-80" data-size="windows">· 68 MB</span></a>
+          <a class="inline-flex items-center gap-2 rounded-md border-2 border-amber-ink px-5 py-2.5 font-semibold transition hover:bg-amber-ink/10" id="dl-lin" href="https://github.com/nazdravan/installer/releases/latest">Linux <span class="font-normal opacity-80" data-size="linux">· 14 MB</span></a>
+        </div>
+        <p class="text-sm"><span id="dl-ver" data-prefix="Версия">Версия 0.1.0</span> · <a class="underline underline-offset-4" href="https://github.com/nazdravan/installer/releases/latest">все файлы и SHA256</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bg-panel/40 pt-14 pb-10 text-[15px]">
+  <div class="container-page grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
+    <div class="flex items-center gap-5">
+      <a href="https://github.com/nicolaepostica" class="shrink-0"><img class="size-20 rounded-full object-cover" src="../assets/author.png" width="320" height="320" alt="Портрет автора, Nicolae Postica" loading="lazy"></a>
+      <div>
+        <p class="text-lg font-semibold">Автор — Nicolae Postica</p>
+        <p class="mt-1 text-muted">автор Furnica и Cangurul</p>
+        <p class="mt-1"><a class="link" href="mailto:nicolae.postica2@gmail.com">nicolae.postica2@gmail.com</a></p>
+      </div>
+    </div>
+    <nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Ссылки">
+      <a class="underline-offset-4 hover:underline" href="https://github.com/nazdravan/installer">Исходный код</a>
+      <a class="underline-offset-4 hover:underline" href="https://github.com/nazdravan/installer#readme">Документация</a>
+      <a class="underline-offset-4 hover:underline" href="https://github.com/nazdravan/installer/issues">Ошибки и предложения</a>
+      <a class="underline-offset-4 hover:underline" href="https://nazdravan.github.io/furnica/">Furnica</a>
+      <a class="underline-offset-4 hover:underline" href="https://nazdravan.github.io/cangurul/">Cangurul</a>
+    </nav>
+  </div>
+  <div class="container-page mt-10 flex flex-wrap justify-between gap-4 text-[13px] text-muted">
+    <p>Фотографии: <a href="https://commons.wikimedia.org/wiki/File:Computer_Lab_Baraboo.jpg">«Computer Lab Baraboo»</a> — JackFromWisconsin, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0</a>; <a href="https://commons.wikimedia.org/wiki/File:Diaz_College_Computer_Laboratory.jpg">«Diaz College Computer Laboratory»</a> — Rc ramz, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; Wikimedia Commons.</p>
+    <p>2026 · GPL-3.0</p>
+  </div>
+</footer>
+
+</body>
+</html>

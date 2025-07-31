@@ -1,6 +1,6 @@
 /* Instalator școală: pagina de prezentare, Tailwind CSS 4. Construire: site/build.sh → site/style.css */
 @import "tailwindcss" source(none);
-@source "../index.html";
+@source "./template.html";
 @source "../main.js";
 
 @font-face {
@@ -18,28 +18,44 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* Tema A: grafit și chihlimbar. */
-@theme {
+/* Tema A: grafit și chihlimbar; varianta deschisă: hârtie caldă cu același chihlimbar.
+   Culorile sunt variabile, ca tema să se schimbe fără a reconstrui clasele. */
+@theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --color-ground: #16181c;
-  --color-panel: #1d2026;
-  --color-panel-2: #262a31;
-  --color-panel-3: #30353e;
-  --color-edge: #343944;
-  --color-sunk: #0f1013;
-  --color-ink: #e9ebee;
-  --color-muted: #a3a8b1;
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-panel-3: var(--panel-3);
+  --color-edge: var(--edge);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-strong: var(--strong);
+  --color-muted: var(--muted);
   --color-amber: #f2a93b;
   --color-amber-hi: #ffbc57;
   --color-amber-ink: #1b1406;
-  --color-ok: #7bd88f;
-  --color-err: #ff7f70;
+  --color-amber-text: var(--amber-text);
+  --color-ok: var(--ok);
+  --color-err: var(--err);
   --animate-rise: rise .7s cubic-bezier(.2, .7, .2, 1) both;
   --animate-spin-fast: spin .8s linear infinite;
   @keyframes rise {
     from { opacity: 0; transform: translateY(20px); }
   }
+}
+
+:root {
+  --ground: #16181c; --panel: #1d2026; --panel-2: #262a31; --panel-3: #30353e; --edge: #3d424c;
+  --sunk: #0f1013; --ink: #e9ebee; --strong: #fff; --muted: #a3a8b1; --amber-text: #f2a93b;
+  --ok: #7bd88f; --err: #ff7f70; --tab-sub: #4b5058;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --ground: #faf8f4; --panel: #f0ece4; --panel-2: #e6e1d7; --panel-3: #d8d2c5; --edge: #c9c2b4;
+  --sunk: #efebe3; --ink: #1d1f23; --strong: #0d0e10; --muted: #5d6169; --amber-text: #9a5800;
+  --ok: #1e8a3c; --err: #c23b2a; --tab-sub: #b9bcc2;
+  color-scheme: light;
 }
 
 @layer base {
@@ -48,6 +64,7 @@
   :focus-visible { @apply outline-2 outline-offset-3 outline-amber; }
   ::selection { @apply bg-amber text-amber-ink; }
   [hidden] { display: none !important; }
+  p:empty { display: none; }
 }
 
 /* Piesele programului, folosite și de main.js. */
@@ -55,9 +72,21 @@
   .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
 
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-md bg-amber px-5 py-3 font-semibold text-amber-ink transition hover:-translate-y-px hover:bg-amber-hi active:translate-y-px; }
-  .btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-amber px-5 py-2.5 font-semibold text-amber transition hover:bg-amber/10; }
+  .btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-amber px-5 py-2.5 font-semibold text-amber-text transition hover:bg-amber/10; }
+  .link { @apply text-amber-text underline underline-offset-4; }
+  .lang { @apply rounded px-2 py-1 font-medium text-muted transition-colors hover:bg-panel hover:text-ink; }
+  .lang[aria-current="page"] { @apply bg-panel text-ink; }
+  .step { @apply text-lg leading-relaxed text-muted; }
+  .step b { @apply font-semibold text-ink; }
+  .step code { @apply rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[.9em] text-ink; }
+  .ctl { @apply flex min-h-12 items-center justify-between gap-3; }
+  .sel { @apply min-w-36 rounded-md border border-edge bg-panel-2 px-2 py-1.5 text-sm; }
+  .band { @apply grid items-center gap-1 rounded-md px-5 py-4 md:grid-cols-[22%_1fr_auto] md:gap-5; }
+  .band small { @apply text-sm font-normal text-muted; }
+  .g-name { @apply block text-3xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl; }
+  :root[data-theme="light"] .theme-sun, :root:not([data-theme="light"]) .theme-moon { display: none; }
 
-  .app { @apply overflow-hidden rounded-xl border border-edge bg-panel text-sm shadow-2xl shadow-black/50; }
+  .app { @apply overflow-hidden rounded-xl border border-edge bg-panel text-sm shadow-2xl shadow-black/30; }
   .app-titlebar { @apply flex justify-between gap-3 bg-panel-2 px-4 py-3 font-semibold; }
   .app-sys { @apply truncate font-normal text-muted; }
   .app-list { @apply relative min-h-56 px-4 pt-2 pb-3; }
@@ -72,7 +101,7 @@
   .app-row.bad .st { @apply text-err; }
   .app-foot { @apply flex items-center gap-2 bg-panel-2 px-4 py-2.5; }
   .app-summary { @apply ml-auto text-muted; }
-  .app-btn { @apply cursor-pointer rounded border border-[#424854] bg-panel-3 px-3 py-1.5 transition hover:bg-[#3a404b] active:scale-95 disabled:cursor-default disabled:opacity-45; }
+  .app-btn { @apply cursor-pointer rounded border border-edge bg-panel-3 px-3 py-1.5 transition hover:bg-panel-2 active:scale-95 disabled:cursor-default disabled:opacity-45; }
   .app-primary { @apply border-amber bg-amber font-semibold text-amber-ink hover:bg-amber-hi; }
   .spin { @apply inline-block size-3.5 animate-spin-fast rounded-full border-2 border-panel-3 border-t-amber align-[-2px]; }
 
@@ -101,7 +130,7 @@
   .tab { @apply grid h-16 cursor-pointer rounded-md bg-panel px-4 py-3 text-left transition-colors hover:bg-panel-2; }
   .tab span { @apply text-[13px] text-muted; }
   .tab[aria-selected="true"] { @apply bg-ink text-ground; }
-  .tab[aria-selected="true"] span { @apply text-[#4b5058]; }
+  .tab[aria-selected="true"] span { color: var(--tab-sub); }
 }
 
 /* Intrări la derulare, doar când scriptul rulează. */
