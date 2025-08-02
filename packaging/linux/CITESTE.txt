@@ -1,4 +1,4 @@
-INSTALATOR ȘCOALĂ — pentru Linux pe 64 de biți (Ubuntu, Linux Mint, Q4OS, antiX)
+INSTALATOR — pentru Linux pe 64 de biți (Ubuntu, Linux Mint, Q4OS, antiX)
 
 Pornire: deschideți un terminal și scrieți
   sh /media/<utilizator>/<stick>/instalator.sh

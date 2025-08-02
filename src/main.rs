@@ -37,13 +37,13 @@ fn main() -> eframe::Result {
 
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("Instalator școală")
+            .with_title("Instalator")
             .with_inner_size([760.0, 560.0])
             .with_min_inner_size([560.0, 400.0]),
         ..Default::default()
     };
     let result = eframe::run_native(
-        "Instalator școală",
+        "Instalator",
         options,
         Box::new(|_cc| Ok(Box::new(app::InstallerApp::new(sys, journal_dir, rows)))),
     );
@@ -56,7 +56,7 @@ fn main() -> eframe::Result {
         }
         rfd::MessageDialog::new()
             .set_level(rfd::MessageLevel::Error)
-            .set_title("Instalator școală")
+            .set_title("Instalator")
             .set_description(format!(
                 "Instalatorul nu poate porni: placa video nu suportă OpenGL 2.0.\n\
                  Puneți dosarul „soft-gl” lângă program.\n\n{e}"

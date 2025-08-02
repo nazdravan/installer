@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Instalator școală: the whole computer lab from one USB stick</title>
+<title>Instalator: every computer from one USB stick</title>
 <meta name="description" content="Runs from a USB stick and silently installs the ticked programs one by one: on Windows 8–11 and on Ubuntu, Linux Mint, Q4OS, antiX. Free, GPL-3.0.">
-<meta property="og:title" content="Instalator școală">
-<meta property="og:description" content="One stick. The whole lab. Silent installs on Windows and Linux.">
+<meta property="og:title" content="Instalator">
+<meta property="og:description" content="One stick. Any computer. Silent installs on Windows and Linux.">
 <meta property="og:image" content="https://nazdravan.github.io/installer/assets/laborator.jpg">
 <link rel="alternate" hreflang="ro" href="https://nazdravan.github.io/installer/">
 <link rel="alternate" hreflang="en" href="https://nazdravan.github.io/installer/en/">
@@ -27,7 +27,7 @@
 
 <header class="sticky top-0 z-20 bg-ground/95">
   <div class="container-page flex h-16 items-center gap-6">
-    <a class="font-bold tracking-tight" href="../">Instalator școală</a>
+    <a class="font-bold tracking-tight" href="../">Instalator</a>
     <nav class="ml-auto hidden gap-7 text-[15px] text-muted lg:flex" aria-label="Sections">
       <a class="transition-colors hover:text-ink" href="#cum">How it works</a>
       <a class="transition-colors hover:text-ink" href="#incearca">Try it</a>
@@ -52,7 +52,7 @@
 <!-- Antet: textul la stânga, fereastra programului lucrând la dreapta. -->
 <section class="container-page grid items-center gap-12 pt-14 pb-24 lg:grid-cols-12 lg:gap-10 lg:pt-24 lg:pb-32" aria-labelledby="titlu">
   <div class="animate-rise lg:col-span-6">
-    <h1 id="titlu" class="text-5xl leading-[1.02] font-bold tracking-tight text-strong sm:text-6xl xl:text-[4.25rem]">One stick.<br>The whole lab.</h1>
+    <h1 id="titlu" class="text-[2.5rem] leading-[1.02] font-bold tracking-tight text-strong sm:text-6xl lg:text-[3.4rem] xl:text-[4rem]">One stick.<br>Any computer.</h1>
     <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">The program runs from a USB stick, lists the programs with checkboxes and installs them one by one, with no windows and no “Next”. On Windows 8–11 and on Linux.</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a class="btn" href="#descarca">Download for Windows</a>
@@ -63,7 +63,7 @@
 
   <div class="grid animate-rise gap-3 [animation-delay:.1s] lg:col-span-6">
     <div class="app" data-ui id="hero-app" aria-label="The installer window, demo">
-      <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="✓"></i></span></div>
+      <div class="app-titlebar"><span>Instalator</span><span class="app-sys">Windows 10 · 64 biți · Administrator <i class="ic ok" role="img" aria-label="✓"></i></span></div>
       <div class="app-list">
         <div class="app-cat">Educațional</div>
         <label class="app-row"><input type="checkbox" checked data-name="Furnica"> <b>Furnica 3.0.5</b> <span class="st">nu e instalat</span> <span class="res"></span></label>
@@ -81,7 +81,7 @@
         <button type="button" class="app-btn app-primary" data-act="install">Instalează (3)</button>
       </div>
     </div>
-    <pre class="journal" id="hero-journal" aria-label="The log on the stick"><code>jurnal\LAB-PC07-20261027-091402.txt
+    <pre class="journal" id="hero-journal" aria-label="The log on the stick"><code>jurnal\PC07-20261027-091402.txt
 09:14:02 Windows 10 · 64 biți · Administrator</code></pre>
     <p class="text-sm text-muted">The program itself speaks Romanian; the demos show its real interface.</p>
   </div>
@@ -92,12 +92,12 @@
   <div class="container-page grid gap-12 lg:grid-cols-12">
     <div class="lg:col-span-4">
       <h2 id="cum-t" class="text-4xl leading-tight font-bold tracking-tight lg:text-5xl">How you use it</h2>
-      <p class="mt-5 max-w-sm text-lg text-muted">Prepare the stick once, at home. In the lab, each computer takes one click.</p>
+      <p class="mt-5 max-w-sm text-lg text-muted">Prepare the stick once. After that, each computer takes one click.</p>
     </div>
 
     <div class="grid gap-20 lg:col-span-7 lg:col-start-6">
       <div class="reveal grid gap-5">
-        <p class="step"><b>At home,</b> unzip the archive onto a stick. Next to the program sits a <code>Windows</code> (or <code>Linux</code>) folder with one folder per program: its installer and a short <code>program.toml</code> file that says which version it is and how to install it silently.</p>
+        <p class="step"><b>First,</b> unzip the archive onto a stick. Next to the program sits a <code>Windows</code> (or <code>Linux</code>) folder with one folder per program: its installer and a short <code>program.toml</code> file that says which version it is and how to install it silently.</p>
         <div class="rounded-lg bg-panel p-5 text-sm leading-loose" data-ui>
           <div class="font-semibold">E:\</div>
           <div class="pl-5">Instalator.exe</div>
@@ -110,10 +110,10 @@
       </div>
 
       <div class="reveal grid gap-5">
-        <p class="step"><b>In the lab,</b> start <code>Instalator.exe</code>; Windows asks for administrator rights once. On Linux, type <code>sh /media/…/instalator.sh</code> in a terminal and enter the password once. The drive letter doesn't matter.</p>
+        <p class="step"><b>At each computer,</b> start <code>Instalator.exe</code>; Windows asks for administrator rights once. On Linux, type <code>sh /media/…/instalator.sh</code> in a terminal and enter the password once. The drive letter doesn't matter.</p>
         <figure>
-          <img class="aspect-video w-full rounded-lg object-cover" src="../assets/laborator.jpg" width="1920" height="1440" alt="A computer lab with rows of computers and empty chairs" loading="lazy">
-          <figcaption class="mt-2.5 text-sm text-muted">An ordinary lab: the same programs on every desk.</figcaption>
+          <img class="aspect-video w-full rounded-lg object-cover" src="../assets/laborator.jpg" width="1920" height="1440" alt="A room with rows of computers and empty chairs" loading="lazy">
+          <figcaption class="mt-2.5 text-sm text-muted">The same programs on every computer in the room.</figcaption>
         </figure>
       </div>
 
@@ -137,7 +137,7 @@
       </div>
 
       <div class="reveal grid gap-5">
-        <p class="step"><b>Next lesson,</b> students find the programs in the Start menu or the applications menu, with the same version on every computer. Furnica and Cangurul, the executors for learning algorithms, come on the stick already.</p>
+        <p class="step"><b>Afterwards,</b> the programs are in the Start menu or the applications menu, with the same version on every computer. Furnica and Cangurul, the executors for learning algorithms, come on the stick already.</p>
         <div class="grid grid-cols-2 gap-3">
           <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="../assets/furnica.png" width="1280" height="800" alt="Furnica: the letter grid and the command editor" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Furnica</figcaption></figure>
           <figure><img class="aspect-[16/10] w-full rounded-lg object-cover object-left-top" src="../assets/cangurul.png" width="1280" height="800" alt="Cangurul: the field where the kangaroo draws lines" loading="lazy"><figcaption class="mt-2 text-sm text-muted">Cangurul</figcaption></figure>
@@ -157,7 +157,7 @@
     <div class="panel relative mt-10 grid grid-cols-1 overflow-hidden rounded-2xl bg-panel lg:grid-cols-[1.6fr_1fr]">
       <div class="min-w-0 bg-panel-2/60 p-4 pb-6 sm:p-8 lg:p-10 lg:pb-20">
         <div class="app shadow-none" data-ui>
-          <div class="app-titlebar"><span>Instalator școală</span><span class="app-sys" id="sim-sys">Windows 10 · 64 biți · Administrator</span></div>
+          <div class="app-titlebar"><span>Instalator</span><span class="app-sys" id="sim-sys">Windows 10 · 64 biți · Administrator</span></div>
           <div class="app-list" id="sim-list"></div>
           <div class="app-foot"><span class="app-summary"></span><span class="app-btn app-primary" id="sim-count">Instalează (0)</span></div>
         </div>
@@ -271,7 +271,7 @@ args = ["/VERYSILENT", "/NORESTART"]</code></pre>
 <section id="descarca" class="pb-24 lg:pb-32" aria-labelledby="descarca-t">
   <div class="container-page">
     <div class="grid overflow-hidden rounded-2xl bg-amber text-amber-ink md:grid-cols-[2fr_3fr]">
-      <img class="h-56 w-full object-cover md:h-full" src="../assets/laborator-2.jpg" width="1920" height="1964" alt="A school computer lab with computers in wooden booths" loading="lazy">
+      <img class="h-56 w-full object-cover md:h-full" src="../assets/laborator-2.jpg" width="1920" height="1964" alt="A room with computers in wooden booths" loading="lazy">
       <div class="flex flex-col justify-center gap-4 p-8 sm:p-12">
         <h2 id="descarca-t" class="text-4xl font-bold tracking-tight lg:text-5xl">Put it on a stick</h2>
         <p class="max-w-lg text-lg">Unzip the archive onto a stick. Furnica and Cangurul are already inside; the instructions are in CITESTE.txt (in Romanian).</p>

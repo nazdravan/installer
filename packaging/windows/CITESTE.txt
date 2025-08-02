@@ -1,4 +1,4 @@
-INSTALATOR ȘCOALĂ — pentru Windows 8 / 8.1 / 10 / 11 (32 și 64 de biți)
+INSTALATOR — pentru Windows 8 / 8.1 / 10 / 11 (32 și 64 de biți)
 
 Pornire: dublu-click pe Instalator.exe. Windows cere drepturi de administrator.
 Bifați programele dorite și apăsați „Instalează”. Programele se instalează pe

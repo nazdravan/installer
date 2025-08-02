@@ -10,7 +10,7 @@ use std::os::windows::ffi::OsStrExt;
 use std::path::PathBuf;
 use std::process::Command;
 
-/// Pornește direct în modul software (pus de `relaunch` sau de profesor).
+/// Pornește direct în modul software (pus de `relaunch` sau din linia de comandă).
 const ENV: &str = "CANGURUL_SOFTWARE_GL";
 const ARG: &str = "--software-gl";
 

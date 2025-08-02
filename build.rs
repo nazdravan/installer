@@ -8,8 +8,8 @@ fn main() {
     if std::path::Path::new("assets/instalator.ico").exists() {
         res.set_icon("assets/instalator.ico");
     }
-    res.set("FileDescription", "Instalator școală");
-    res.set("ProductName", "Instalator școală");
+    res.set("FileDescription", "Instalator");
+    res.set("ProductName", "Instalator");
     res.set_manifest_file("app.manifest");
 
     // La compilarea din macOS/Linux pentru ținta win7, winresource nu ghicește prefixul uneltelor MinGW.

@@ -1,4 +1,4 @@
-// Instalator școală: pagina de prezentare. Fără biblioteci; pagina se citește și fără script.
+// Instalator: pagina de prezentare. Fără biblioteci; pagina se citește și fără script.
 document.documentElement.classList.add("js");
 
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -346,8 +346,8 @@ fn foreign_message(target: &Path) -> String {
     format!("în {} există deja o altă instalare (de exemplu din .msi); dezinstalați-o întâi", target.display())
 }
 
-/// Cum ajunge un argument în linia de comandă de pe Windows. Argumentele scrise de profesor se
-/// dau exact cum le-ar scrie în cmd (msiexec, NSIS și Inno își citesc singure linia, nu după
+/// Cum ajunge un argument în linia de comandă de pe Windows. Argumentele scrise în program.toml se
+/// dau exact cum le-ai scrie în cmd (msiexec, NSIS și Inno își citesc singure linia, nu după
 /// regulile MSVCRT); doar unul fără ghilimele care conține spații, ca o cale, primește ghilimele.
 #[cfg_attr(not(windows), allow(dead_code))]
 pub fn windows_arg(arg: &str) -> String {

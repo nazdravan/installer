@@ -207,7 +207,7 @@ impl eframe::App for InstallerApp {
 
         egui::Panel::top("sistem").frame(egui::Frame::new().fill(ui.visuals().panel_fill).inner_margin(Margin::symmetric(14, 10))).show(ui, |ui| {
             ui.horizontal(|ui| {
-                ui.label(RichText::new("Instalator școală").size(20.0).strong());
+                ui.label(RichText::new("Instalator").size(20.0).strong());
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     ui.label(RichText::new(self.sys.label()).weak());
                 });

@@ -1,4 +1,4 @@
-/* Instalator școală: pagina de prezentare, Tailwind CSS 4. Construire: site/build.sh → site/style.css */
+/* Instalator: pagina de prezentare, Tailwind CSS 4. Construire: site/build.sh → site/style.css */
 @import "tailwindcss" source(none);
 @source "./template.html";
 @source "../main.js";
