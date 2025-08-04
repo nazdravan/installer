@@ -39,7 +39,13 @@ fn main() -> eframe::Result {
         viewport: egui::ViewportBuilder::default()
             .with_title("Instalator")
             .with_inner_size([760.0, 560.0])
-            .with_min_inner_size([560.0, 400.0]),
+            .with_min_inner_size([560.0, 400.0])
+            // Iconița de 64×64 ca pixeli RGBA bruți (assets/instalator.svg), fără decodor PNG.
+            .with_icon(egui::IconData {
+                rgba: include_bytes!("../assets/instalator-64.rgba").to_vec(),
+                width: 64,
+                height: 64,
+            }),
         ..Default::default()
     };
     let result = eframe::run_native(

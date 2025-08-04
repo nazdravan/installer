@@ -1,4 +1,4 @@
-# Instalator
+# <img src="assets/instalator.svg" width="40" height="40" alt="" align="top"> Instalator
 
 Un program care pornește de pe stick pe orice calculator (Windows 8 / 8.1 /
 10 / 11, 32 și 64 de biți; Linux pe 64 de biți: Ubuntu, Linux Mint, Q4OS, antiX) și instalează

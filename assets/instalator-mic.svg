@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Varianta pentru 16–32 px: aceleași forme, fără detaliile care s-ar pierde. -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="7" fill="#1d2026"/>
+  <rect x="12" y="3" width="8" height="8" rx="1" fill="#c9ced6"/>
+  <rect x="8" y="9.5" width="16" height="20" rx="3" fill="#f2a93b"/>
+  <path d="M12 19.5 l3 3 l5 -6" fill="none" stroke="#1b1406" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

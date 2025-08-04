@@ -19,6 +19,9 @@
     document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
   } catch (e) {}
 </script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script defer src="main.js"></script>
@@ -27,7 +30,7 @@
 
 <header class="sticky top-0 z-20 bg-ground/95">
   <div class="container-page flex h-16 items-center gap-6">
-    <a class="font-bold tracking-tight" href="./">Instalator</a>
+    <a class="flex items-center gap-2.5 font-bold tracking-tight" href="./"><img src="assets/favicon.svg" width="28" height="28" alt="">Instalator</a>
     <nav class="ml-auto hidden gap-7 text-[15px] text-muted lg:flex" aria-label="Secțiuni">
       <a class="transition-colors hover:text-ink" href="#cum">Cum funcționează</a>
       <a class="transition-colors hover:text-ink" href="#incearca">Încearcă</a>
@@ -279,7 +282,7 @@ args = ["/VERYSILENT", "/NORESTART"]</code></pre>
           <a class="inline-flex items-center gap-2 rounded-md bg-amber-ink px-5 py-3 font-semibold text-[#f2a93b] transition hover:-translate-y-px hover:bg-[#2a2010]" id="dl-win" href="https://github.com/nazdravan/installer/releases/latest">Windows 8–11 <span class="font-normal opacity-80" data-size="windows">· 68 MB</span></a>
           <a class="inline-flex items-center gap-2 rounded-md border-2 border-amber-ink px-5 py-2.5 font-semibold transition hover:bg-amber-ink/10" id="dl-lin" href="https://github.com/nazdravan/installer/releases/latest">Linux <span class="font-normal opacity-80" data-size="linux">· 14 MB</span></a>
         </div>
-        <p class="text-sm"><span id="dl-ver" data-prefix="Versiunea">Versiunea 0.1.0</span> · <a class="underline underline-offset-4" href="https://github.com/nazdravan/installer/releases/latest">toate fișierele și SHA256</a></p>
+        <p class="text-sm"><span id="dl-ver" data-prefix="Versiunea">Versiunea 0.1.1</span> · <a class="underline underline-offset-4" href="https://github.com/nazdravan/installer/releases/latest">toate fișierele și SHA256</a></p>
       </div>
     </div>
   </div>

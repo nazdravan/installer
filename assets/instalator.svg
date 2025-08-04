@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Iconița Instalatorului: un stick cu o bifă, în culorile paginii (grafit și chihlimbar). -->
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="#1d2026"/>
+  <rect x="98" y="30" width="60" height="56" rx="8" fill="#c9ced6"/>
+  <rect x="111" y="44" width="12" height="14" rx="2" fill="#1d2026"/>
+  <rect x="133" y="44" width="12" height="14" rx="2" fill="#1d2026"/>
+  <rect x="70" y="78" width="116" height="152" rx="24" fill="#f2a93b"/>
+  <path d="M100 156 l22 23 l36 -46" fill="none" stroke="#1b1406" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
